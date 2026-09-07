@@ -1047,7 +1047,7 @@ function ZHub() {
 			o.calMarket = 1; //1香港市场（含股票、ETFs、窝轮、牛熊、期权、非假期交易期货；不含假期交易期货）
 			o.securityFirm = o.trdEnv ? 1 : 0; //0富途/自建模拟;1:富途证券(香港);2:moomoo证券(美国);
 			o.quote = 1; //1富途的websocket服务;
-			o.trade = o.trdEnv ? 1 : 91; //0无;1富途的websocket服务;92自建前端仿真;
+			o.trade = o.trdEnv ? 1 : 92; //0无;1富途的websocket服务;92自建前端仿真;
 			o.tmode = o.trdEnv ? 0 : 2; //富途推送完善的逐笔和十档摆盘
 			let c = intval(o.code);
 			if ((c >= 1) && (c <= 9999)) { //主板及 GEM 上市證券
@@ -1209,7 +1209,7 @@ function ZHub() {
 			o.calMarket = 1; //1香港市场（含股票、ETFs、窝轮、牛熊、期权、非假期交易期货；不含假期交易期货）
 			o.securityFirm = o.trdEnv ? 1 : 0; //0富途/自建模拟;1:富途证券(香港);2:moomoo证券(美国);
 			o.quote = 1; //1富途的websocket服务;
-			o.trade = o.trdEnv ? 1 : 91; //1富途的websocket服务;92自建前端仿真;
+			o.trade = o.trdEnv ? 1 : 92; //1富途的websocket服务;92自建前端仿真;
 			o.tmode = o.trdEnv ? 0 : 2; //富途推送完善的逐笔和十档摆盘
 			switch (c) {
 				case 'MHI': { //小恒指
