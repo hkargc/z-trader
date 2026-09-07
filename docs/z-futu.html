@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+	<head>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex">
+		<meta name="referrer" content="no-referrer">
+		<title>Z-Trader-富途接口</title>
+		<script>
+			if (top !== self) {
+				top.location.href = self.location.href;
+			}
+		</script>
+		<script src="./js/HackTimer.silent.min.js"></script>
+		<script src="./js/jquery-4.0.0.min.js"></script>
+		<script src="./js/jquery-ui/jquery-ui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./js/jquery-ui/jquery-ui.min.css">
+		<script src="./js/twig.min.js"></script>
+		<script src="./js/long.min.js"></script>
+		<script src="./js/dexie.min.js"></script>
+		<script src="./js/paipan.min.js"></script>
+		<script src="./js/locutus.min.js"></script>
+		<script>window.O = {};</script>
+		<script>
+			document.write('\x3Cscript src="./js/config.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/common.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/z.hub.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/z-trader.js?_=' + Math.random() + '">\x3C/script>');
+		</script>
+		<link rel="stylesheet" type="text/css" href="./styles/z-trader.css">
+		<link rel="icon" href="./favicon.ico" type="image/x-icon">
+	</head>
+	<body style="padding:0;margin:0">
+		<div class="search-bd" style="box-sizing: border-box;" id="wrap-search">
+			<table style="margin:auto;" id="sch">
+				<tr>
+					<td><select id="market" name="market" onchange="show();">
+						<option value='0'>沪深</option>
+						<option value='1'>港股</option>
+						<option value='21'>沪股</option>
+						<option value='22'>深股</option>
+						</select>
+					</td>
+					<td><select name='plate' id='plate' onchange="show();">
+								<option value='0' selected="selected">不限板块</option>
+								<option value='1'>主板/主板</option>
+								<option value='2'>创业/科创</option>
+							</select>
+						</td>
+					<td><select name='pmin' id='pmin' onchange="show();">
+							<option value='0' selected="selected">高于</option>
+							<option value='0.01'>0.01</option>
+							<option value='0.25'>0.25</option>
+							<option value='0.5'>0.5</option>
+							<option value='1'>1.0</option>
+							<option value='5'>5.0</option>
+							<option value='10'>10.0</option>
+							<option value='20'>20.0</option>
+							<option value='30'>30.0</option>
+							<option value='40'>40.0</option>
+							<option value='50'>50.0</option>
+						</select>
+					</td>
+					<td><select name='pmax' id='pmax' onchange="show();">
+							<option value='0' selected="selected">低于</option>
+							<option value='0.01'>0.01</option>
+							<option value='0.25'>0.25</option>
+							<option value='0.5'>0.5</option>
+							<option value='1'>1.0</option>
+							<option value='5'>5.0</option>
+							<option value='10'>10.0</option>
+							<option value='20'>20.0</option>
+							<option value='30'>30.0</option>
+							<option value='40'>40.0</option>
+							<option value='50'>50.0</option>
+						</select>
+					</td>
+					<td><select name='by' id='by' onchange="show();">
+							<option value='0' selected="selected">价格</option>
+							<option value='1'>股本</option>
+							<option value='2'>涨跌</option>
+							<option value='3'>成交</option>
+							<option value='4'>代码</option>
+						</select>
+					</td>
+					<td><select name='order' id='order' onchange="show();">
+							<option value='0' selected="selected">升序</option>
+							<option value='1'>降序</option>
+						</select>
+					</td>
+					<td>
+					合计: <span id="TOTAL">****</span>支
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div style="display:inline-flex;flex-wrap:nowrap;align-items:flex-start;min-width:min-content;" id="wrap-tables">
+			<script id="twig_list" type="text/twig">
+				{% for chunk in list|batch(200) %}
+				
+				<table class="line_a" style="flex-shrink:0;">
+					<tr><th>代码</th><th>名称</th><th>价格</th><th>成交量</th><th>价变</th></tr>
+					{% for k,a in chunk %}
+					<tr>
+						<td class="clipboard" data-clipboard-text="{{ a['code'] }}">{{ a['code'] }}</td>
+						<td><a href="javascript:go('{{ a['code'] }}')">{{ a['name'] }}</a></td>
+						<td>{{ a.curPrice|default(0) }}</td>
+						<td>{{ a.volume|default(0)|bytes }}</td>
+						<td class="{% if a.ratePrice>0 %}hongse{% else %}lvse{% endif %}">{{ a.ratePrice|default(0) }}%</td>
+					</tr>
+					{% endfor %}
+				</table>
+					
+				{% endfor %}
+			</script>
+		</div>
+		
+		<script>
+		let uptime = +date("YmdHi");
+		let stocks = []; //沪深+港股所有的,一万条左右
+		function go(code) {
+			let url = `./z-trader.html?_t=${Math.random()}&code=${code}&klType=2&pmode=5&trdEnv=0`;
+			const newWin = window.open(url, "_blank");
+			if (newWin) {
+				newWin.opener = null; // 切断父子窗口联系，提升安全性与性能
+			}
+		}
+
+		function show(ok) {
+			let market = +$("#market").val();
+			let plate = +$("#plate").val();
+			let pmin = +$("#pmin").val();
+			let pmax = +$("#pmax").val();
+			let by = +$("#by").val();
+			let order = +$("#order").val();
+			setcookie("futu-select", json_encode({ //locutus.min.js中定义的方法
+				market: market,
+				plate: plate,
+				pmin: pmin,
+				pmax: pmax,
+				by: by,
+				order: order
+			}), time() + 365 * 24 * 60 * 60, '/');
+
+			let sort = [];
+			let list = [];
+			let codes = []; //要删除的
+			for (let code in stocks) {
+				let a = structuredClone(stocks[code]);
+				if(ok && (a.uptime != uptime)){ //过期的标的
+					codes.push(code);
+					delete stocks[code];
+				}
+				if ((market != 0) && (a['market'] != market)) {
+					continue;
+				}
+				if ((market == 0) && !in_array(a['market'], [21, 22])) {
+					continue;
+				}
+				if ((plate == 1) && in_array(a['market'], [1]) && preg_match(/^(08)/, a['code'])) { //港股主板:非08开头
+					continue;
+				}
+				if ((plate == 1) && in_array(a['market'], [21, 22]) && !preg_match(/^(600|601|603|605|000|001|002|003)/, a['code'])) { //沪深主板
+					continue;
+				}
+				if ((plate == 2) && in_array(a['market'], [1]) && !preg_match(/^(08)/, a['code'])) { //香港创业板:08开头
+					continue;
+				}
+				if ((plate == 2) && in_array(a['market'], [21, 22]) && !preg_match(/^(688|300|301)/, a['code'])) { //沪深创业板/科创板
+					continue;
+				}
+				if (pmin && a['curPrice'] < pmin) {
+					continue;
+				}
+				if (pmax && a['curPrice'] > pmax) {
+					continue;
+				}
+				switch (by) {
+					case 1:
+						sort.push(+a['issuedShares']);
+						break;
+					case 2:
+						sort.push(+a['ratePrice']);
+						break;
+					case 3:
+						sort.push(+a['volume']);
+						break;
+					case 4:
+						sort.push(+a['code']);
+						break;
+					default:
+						sort.push(+a['curPrice']);
+				}
+				list.push(a);
+			}
+			array_multisort(sort, order ? 'SORT_DESC' : 'SORT_ASC', 'SORT_NUMERIC', list);
+			let output = Twig.twig({
+				data: $('#twig_list').html(),
+				autoescape: true,
+				strict_variables: false
+			}).render({
+				list: list
+			});
+			$("#wrap-tables").find("table").remove();
+			$("#wrap-tables").append(output);
+			
+			$("#TOTAL").html(list.length);
+			
+			const width = $("#wrap-tables").width();
+			//$("#wrap-search").outerWidth(width);
+
+			window.db.transaction('rw', window.db.table("z-stocks"), function() {
+				let now = time() * 1000000; //微秒做权重底座
+				let dtb = window.db.table("z-stocks");
+				
+				empty(codes) || dtb.bulkDelete(codes);
+				for (let i = 0; i < list.length; i++) {
+					dtb.update(list[i]['code'], {
+						sort: now - i
+					}); //code是主键
+				}
+			}).catch(function(e) {
+				console.error(e);
+			});
+		}
+		$(function() {
+			Twig.extendFilter("bytes", bytes);
+			resp = new Array(); //已在common.js中定义
+			resp[1001] = function(s2c) { //成功连上了,先连行情再连交易
+				if (empty(s2c.wk) == true) { //来自行情连接
+
+				}
+				if (empty(s2c.wk) == false) { //来自交易连接
+
+				}
+				if (empty(Z.Timer)) { //还没完成,确保连接都成功了
+					return true;
+				}
+				window.db.table("z-stocks").each(function(a) {
+					stocks[a['code']] = a;
+				}).then(function() {
+					show(false);
+					
+					Z.qotMarket = 1;
+					Z.Qot_GetStaticInfo(3, []);
+				});
+			};
+			resp[3202] = function(s2c) {
+				let market = 0;
+				for (let i in s2c.staticInfoList) {
+					let a = s2c.staticInfoList[i]['basic'];
+					let b = Z.stock(a['security']['code'], {
+						trdEnv: 0,
+						part: true,
+						force: false
+					}); //扩展信息
+					
+					let code;
+					a['code'] = code = a['security']['code'];
+					a['market'] = market = a['security']['market'];
+					a['uptime'] = uptime; //下一次更新时间
+
+					if (in_array(market, [21, 22]) && !preg_match(/^(600|601|603|605|688|000|001|002|003|300|301)/, a['code'])) { //B股或配股等
+						continue;
+					}
+					if (str_contains(a['name'], '(') || str_contains(a['name'], ')')) {
+						continue;
+					}
+					if (a['delisting']) { //已经退市
+						continue;
+					}
+					if (in_array(market, [1]) && (b.secType != 3)) { //港股把人民币交易的剔除
+						continue;
+					}
+					delete a['id'];
+					delete a['listTime'];
+					delete a['security'];
+					delete a['delisting'];
+
+					a = array_merge(stocks[code] || {}, a);
+					a['sptime'] = a['sptime'] || 0; //snap time 快照更新时间
+					a['curPrice'] = a['curPrice'] || 0;
+					a['sort'] = a['sort'] || 0; //排序
+					
+					stocks[code] = a;
+				}
+				if (market == 1) {
+					Z.qotMarket = 21;
+					Z.Qot_GetStaticInfo(3, []);
+				}
+				if (market == 21) {
+					Z.qotMarket = 22;
+					Z.Qot_GetStaticInfo(3, []);
+				}
+				if (market == 22) {
+					show(true);
+					window.setInterval(function() { //循环更新快照,富途限频: 30秒60次,每次不超过400条
+						let securityList = [];
+						let sptime = time() - 10 * 60; //最快每N分钟更新一次快照
+						for(let code in stocks){
+							let a = stocks[code];
+							if(a['sptime'] >= sptime){
+								continue;
+							}
+							securityList.push({
+								'market': a['market'],
+								'code': a['code']
+							});
+							if(securityList.length == 400){
+								break;
+							}
+						}
+						empty(securityList) || Z.Qot_GetSecuritySnapshot([], securityList);
+					}, 5000);
+				}
+			};
+			resp[3203] = function(s2c) {
+				list = [];
+				for (let i in s2c.snapshotList) {
+					let a = s2c.snapshotList[i];
+					let code = a['basic']['security']['code'];
+					
+					a = array_merge(stocks[code], a['basic'], a['equityExData']);
+					a['sptime'] = time();
+					a['volume'] = +l2s(a['volume'] || 0);
+					a['issuedShares'] = +l2s(a['issuedShares'] || 0);
+					a['outstandingShares'] = +l2s(a['outstandingShares'] || 0);
+					a['ratePrice'] = a['lastClosePrice'] && a['curPrice'] ? +sprintf("%.2f", (a['curPrice'] - a['lastClosePrice']) * 100 / a['lastClosePrice']) : 0; //涨跌幅
+					delete a['listTime'];
+					delete a['security'];
+					delete a['updateTime'];
+					delete a['bidVol'];
+					delete a['askVol'];
+					delete a['askPrice'];
+					delete a['bidPrice'];
+					delete a['bidAskRatio'];
+					delete a['security'];
+
+					if (empty(a['curPrice']) || empty(a['issuedShares'])) { //非正常股份
+						delete stocks[code];
+						window.db.table("z-stocks").bulkDelete([code]);
+						continue;
+					}
+
+					stocks[code] = a;
+
+					list.push(a);
+				}
+				empty(list) || window.db.table("z-stocks").bulkPut(list).then(function() {
+
+				});
+			};
+			resp[1003] = function(s2c) {
+				//console.log(s2c)
+			};
+			resp[1004] = function(s2c) {
+				//console.log(s2c)
+			};
+			window.initdb().open().then(function() {
+				const o = Object.assign({}, json_decode($_COOKIE["futu-select"]));
+				for (let i in o) {
+					$(`#wrap-search select[name='${i}']`).val(o[i]);
+				}
+				window.Z = new ZHub();
+				Z.quote = 1;
+				Z.callback = function(c, n) {
+					if (c['proto'] <= 0) {
+						return alert('[请求异常]结果:' + c['retType'] + ";\n内容:" + c['retMsg'], {
+							reload: in_array(c['retType'], [-1])
+						});
+					}
+					if (c['retType'] < 0) {
+						function_exists('buttons') && buttons(G.init);
+						return alert('[响应异常]结果:' + c['proto'] + ';代码:' + intval(c['errCode']) + ';协议:' + c['proto'] + ";\n内容:" + (c['retMsg'] ? c['retMsg'] : ''), {
+							reload: (++G.alert >= 8)
+						});
+					}
+					let cb = resp || task;
+					if (empty(cb[c['proto']])) {
+						return console.log(c);
+					}
+					cb[c['proto']](c['s2c']);
+				};
+				Z.start();
+			}).catch(function(e) {
+				console.log(e.stack || e);
+			}).finally(function() {
+
+			});
+		});
+		</script>
+	</body>
+</html>

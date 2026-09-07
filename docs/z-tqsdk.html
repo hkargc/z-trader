@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+	<head>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex">
+		<meta name="referrer" content="no-referrer">
+		<title>Z-Trader-大陆期货</title>
+		<script>
+			if (top !== self) {
+				top.location.href = self.location.href;
+			}
+		</script>
+		<script src="./js/HackTimer.silent.min.js"></script>
+		<script src="./js/jquery-4.0.0.min.js"></script>
+		<script src="./js/jquery-ui/jquery-ui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./js/jquery-ui/jquery-ui.min.css">
+		<script src="./js/twig.min.js"></script>
+		<script src="./js/long.min.js"></script>
+		<script src="./js/dexie.min.js"></script>
+		<script src="./js/paipan.min.js"></script>
+		<script src="./js/locutus.min.js"></script>
+		<script>window.O = {};</script>
+		<script>
+			document.write('\x3Cscript src="./js/config.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/common.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/z.hub.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/z-trader.js?_=' + Math.random() + '">\x3C/script>');
+		</script>
+		<link rel="stylesheet" type="text/css" href="./styles/z-trader.css">
+		<link rel="icon" href="./favicon.ico" type="image/x-icon">
+	</head>
+	<body style="padding:0;margin:0">
+		<div class="search-bd" style="box-sizing: border-box;" id="wrap-search">
+			<table style="margin:auto;" id="sch">
+				<tr>
+					<td>K线类型:<select id="klType" name="klType">
+						</select>
+					</td>
+					<td>页面模式:<select id="pmode" name="pmode">
+							<option value='0'>组合页面</option>
+							<option value='1' selected="selected">综合模式</option>
+							<option value='2'>面板模式</option>
+							<option value='4'>简易模式</option>
+							<option value='5'>复盘模式</option>
+						</select>
+					</td>
+					<td>交易模式:<select id="trdEnv" name="trdEnv">
+							<option value='0' selected="selected">模拟交易</option>
+							<option value='1'>实盘交易</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div style="display:inline-flex;flex-wrap:nowrap;align-items:flex-start;min-width:min-content;" id="wrap-tables">
+			<script id="twig_list" type="text/twig">
+				{% for exchange_id, nodes in list %}
+				<table class="line_a" style="flex-shrink:0;">
+					<tr>
+						<th colspan="4">
+						{{ exchange_id }}
+						<a href="{{ EXCG[exchange_id]|last }}" style="float:none;font-size:inherit;color:red;" target="_blank">[{{ EXCG[exchange_id]|first }}]</a>
+						</th>
+					</tr>
+					<tr><th>代码</th><th>名称</th><th>保证金</th><th>开仓</th></tr>
+					{% for instrument_id, a in nodes %}
+					<tr>
+						<td class="clipboard" data-clipboard-text="{{ a['instrument_id'] }}">{{ a['instrument_id'] }}</td>
+						<td><a {% if a['CONT'] %}style="color:red;"{% endif %} href="javascript:go('{{ a['instrument_id'] }}')">{{ a['instrument_name'] }}</a></td>
+						<td>{{ a['margin'] }}</td>
+						<td>{{ a['commission']|number_format(2) }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+					
+				{% endfor %}
+			</script>
+		</div>
+		
+		<script>
+		const EXCG = { //exchange
+			'SHFE': ['上海期货交易所', 'https://www.shfe.com.cn/'],
+			'DCE': ['大连商品交易所', 'http://www.dce.com.cn/dce/'],
+			'CZCE': ['郑州商品交易所', 'https://www.czce.com.cn/cn/index.htm'],
+			'CFFEX': ['中国金融期货交易所', 'http://www.cffex.com.cn/cn/index.html'],
+			'INE': ['上海国际能源交易中心', 'https://www.ine.cn/'],
+			'GFEX': ['广州期货交易所', 'http://www.gfex.com.cn/gfex/index.shtml']
+		};
+		function go(code) {
+			const klType = $("#klType").val();
+			const pmode = $("#pmode").val();
+			const trdEnv = $("#trdEnv").val();
+			setcookie("trader-select", json_encode({ //locutus.min.js中定义的方法
+				klType: klType,
+				pmode: pmode,
+				trdEnv: trdEnv
+			}), time() + 365 * 24 * 60 * 60, '/');
+			let url = `./mix.html?_t=${Math.random()}&code=${code}&klType=${klType}&trdEnv=${trdEnv}`; //组合页面
+			if(in_array(pmode, [1, 2, 4, 5])){ //单页显示
+				url = `./z-trader.html?_t=${Math.random()}&code=${code}&klType=${klType}&pmode=${pmode}&trdEnv=${trdEnv}`;
+			}
+			const newWin = window.open(url, "_blank");
+			if (newWin) {
+				newWin.opener = null; // 切断父子窗口联系，提升安全性与性能
+			}
+		}
+		$(function() {
+			resp = new Array(); //已在common.js中定义
+			resp[1001] = function(s2c) { //成功连上了,先连行情再连交易
+				if (empty(s2c.wk) == true) { //来自行情连接
+					
+				}
+				if (empty(s2c.wk) == false) { //来自交易连接
+				
+				}
+				if (empty(Z.Timer)) { //还没完成,确保连接都成功了
+					return true;
+				}
+				Z.Qot_GetStaticInfo(10, []);
+			};
+			resp[3202] = function(s2c) {
+				let list = {};
+				let cont = {};
+				for(let i in s2c.symbols){
+					let a = s2c.symbols[i];
+					if((a["class"] == "FUTURE") && (a["exchange_id"] == "KQD")){ //海外期货
+						continue;
+					}
+					if((a["class"] == "FUTURE") && (a["exchange_id"] != "KQD")){ //可交易期货:活跃期货
+						if(in_array(a["product_id"], ['JR', 'LR', 'PM', 'RI', 'WH', 'ZC', 'RS', 'wr', 'bb', 'fb', 'rr'])){
+							continue;
+						}
+						if(empty(list[a["exchange_id"]])){
+							list[a["exchange_id"]] = {};
+						}
+						if(empty(list[a["exchange_id"]][a["instrument_id"]])){
+							list[a["exchange_id"]][a["instrument_id"]] = {};
+						}
+						a['CONT'] = false;
+						list[a["exchange_id"]][a["instrument_id"]] = a;
+					}
+					if((a["class"] == "CONT") && (a["exchange_id"] == "KQ")){ //期货主连:80多支
+						if(empty(a["node"])){ //异常
+							continue;
+						}
+						cont[a["node"]["instrument_id"]] = a["node"]["exchange_id"];
+					}
+				}
+				for(let instrument_id in cont){
+					let exchange_id = cont[instrument_id];
+					if(empty(list[exchange_id][instrument_id])){
+						continue;
+					}
+					list[exchange_id][instrument_id]['CONT'] = true;
+				}
+				for(let exchange_id in list){
+					ksort(list[exchange_id]);
+				}
+				ksort(list);
+				let output = Twig.twig({
+					data: $('#twig_list').html(),
+					autoescape: true,
+					strict_variables: true
+				}).render({
+					list: list,
+					EXCG: EXCG
+				});
+				$("#wrap-tables").append(output);
+				
+				const width = $("#wrap-tables").width();
+				$("#wrap-search").outerWidth(width);
+				for (let k in KL2SUB) { //common.js中定义的
+					const a = KL2SUB[k];
+					$("#wrap-search select[name='klType']").append(`<option value='${k}'>${a[1]}</option>`);
+				}
+				const o = Object.assign({}, json_decode($_COOKIE["trader-select"]));
+				for (let i in o) {
+					$(`#wrap-search select[name='${i}']`).val(o[i]);
+				}
+			};
+			resp[1003] = function(s2c) {
+				//console.log(s2c)
+			};
+			resp[1004] = function(s2c) {
+				//console.log(s2c)
+			};
+			window.Z = new ZHub();
+			Z.quote = 11;
+			Z.callback = function(c, n) {
+				if (c['proto'] <= 0) {
+					return alert('[请求异常]结果:' + c['retType'] + ";\n内容:" + c['retMsg'], {
+						reload: in_array(c['retType'], [-1])
+					});
+				}
+				if (c['retType'] < 0) {
+					function_exists('buttons') && buttons(G.init);
+					return alert('[响应异常]结果:' + c['proto'] + ';代码:' + intval(c['errCode']) + ';协议:' + c['proto'] + ";\n内容:" + (c['retMsg'] ? c['retMsg'] : ''), {
+						reload: (++G.alert >= 8)
+					});
+				}
+				let cb = resp || task;
+				if (empty(cb[c['proto']])) {
+					return console.log(c);
+				}
+				cb[c['proto']](c['s2c']);
+			};
+			Z.start();
+		});
+		</script>
+	</body>
+</html>

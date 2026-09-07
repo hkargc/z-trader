@@ -1,0 +1,445 @@
+.nav {
+	border: solid 1px #eee;
+	margin-bottom: 2px;
+	background: #09f;
+	color: #fff;
+}
+
+.nav a,
+.nav:visited {
+	font-size: 16px;
+	color: #fff;
+	border-bottom: 2px solid transparent;
+	padding: 3px 8px;
+	margin: 0 10px;
+	text-decoration: none;
+	line-height: 20px;
+}
+
+.nav a:hover {
+	border-color: #3378DD;
+	color: #ffb31f;
+}
+
+.line_a a {
+	float: left;
+	padding: 3px 8px;
+	line-height: 20px;
+	font-size: 13px;
+	color: #0c7df5;
+	text-decoration: none;
+}
+
+.line_a a:hover {
+	color: #000;
+}
+
+.line_a a:visited {
+	color: #666;
+}
+
+.line_a a:focus {
+	color: red;
+}
+
+.line_a {
+	float: left;
+	margin-left: 2px;
+	border: 1px solid #ccc;
+}
+
+.line_a th {
+	margin-bottom: -1px;
+	border-top: none;
+	background-color: #e9e9e9;
+	line-height: 30px;
+	border-left: 1px solid #e6e6e6;
+	padding: 5px 3px 5px 6px;
+	table-layout: fixed;
+}
+
+.line_a td {
+	border-top: 1px solid #e6e6e6;
+	margin-bottom: -1px;
+	border-left: 1px solid #e6e6e6;
+	line-height: 20px;
+	padding: 5px 3px 5px 6px;
+	white-space: nowrap;
+}
+
+.line_b td {
+	border-bottom: 1px solid #e6e6e6;
+	border-right: 1px solid #e6e6e6;
+}
+
+.line_b td:nth-child(12) {
+	border-right-color: green;
+}
+
+.line_c {
+	width: 200px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border-right: 1px dotted red;
+}
+
+.pen_max {
+	width: 620px;
+	float: left;
+	clear: both;
+	border-right: 1px solid red;
+	border-bottom: 1px solid red;
+}
+
+.pen_max table td,
+.pen_max table th {
+	padding: 0 5px;
+	margin: 0;
+	border: 1px;
+	width: 48%;
+	font-size: 13px;
+	line-height: 30px;
+}
+
+.search-bd {
+	color: #333;
+	font-weight: 700;
+	background-color: #FFeee5;
+	padding: 5px;
+	margin-bottom: 1px;
+	border: 1px solid #FF5400;
+}
+
+.search-bd select {
+	margin: 0px 5px;
+	padding: 5px 10px;
+}
+
+.lvse {
+	color: #00AA3B
+}
+
+.hongse {
+	color: #f00
+}
+
+.huangse {
+	color: #ffb31f
+}
+
+.huangse a {
+	color: #ffb31f
+}
+
+.ui-dialog .ui-dialog-content {
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: hidden;
+	border: 0;
+}
+
+.pages {
+	clear: both;
+	padding-bottom: 10px;
+	line-height: 30px;
+	text-align: right;
+	margin-top: 20px;
+	padding: 10px 0;
+	border-top: 1px dotted #ddd;
+}
+
+.pages a,
+.pages span {
+	color: #000;
+	padding: 5px 10px;
+	border: 1px solid #ccc;
+	margin: 5px;
+	font-size: 14px;
+}
+
+.pages a:hover,
+.pages .current {
+	background: #2ab8ba;
+	color: #fff;
+}
+
+.n {
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	vertical-align: middle;
+	color: green;
+	position: absolute;
+	border-top: 1px solid green;
+	border-left: 1px solid green;
+	border-bottom: 1px solid green;
+	border-right: 1px solid green;
+}
+
+#buttons {
+	text-align: center;
+	border-left: 1px solid green;
+	border-bottom: 1px solid green;
+	border-right: 1px solid green;
+	position: absolute;
+	display: none;
+	width: 250px;
+	height: 40px;
+	top: 0px;
+	-webkit-user-select: none;
+	/* Safari */
+	-ms-user-select: none;
+	/* IE 10 and IE 11 */
+	user-select: none;
+	/* Standard syntax */
+}
+
+#buttons button {
+	font-size: 16px;
+	padding: 2px;
+}
+
+.opt {
+	text-align: center;
+	border-left: 1px solid green;
+	border-top: 1px solid green;
+	border-right: 1px solid green;
+	position: absolute;
+	display: block;
+	bottom: 80px;
+	width: 100px;
+	height: 40px;
+	-webkit-user-select: none;
+	/* Safari */
+	-ms-user-select: none;
+	/* IE 10 and IE 11 */
+	user-select: none;
+	/* Standard syntax */
+}
+
+.opt button {
+	font-size: 16px;
+	padding: 2px;
+	margin: 2px;
+}
+
+#opt1 {
+	left: 350px;
+	border-left: 0px;
+}
+
+#opt2 {
+	left: 460px;
+}
+
+#opt3 {
+	left: 570px;
+}
+
+#opt4 {
+	left: 680px;
+}
+
+.red {
+	color: red;
+}
+
+.red a:link {
+	color: red;
+}
+
+.red a:hover {
+	color: red;
+}
+
+.trader {
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	font-size: 12px;
+	width: 100%
+}
+
+.trader table {
+	width: 100%
+}
+
+.trader table td {
+	border-top: 1px solid #e6e6e6;
+	margin-bottom: 0px;
+	border-left: 1px solid #e6e6e6;
+	line-height: 20px;
+	padding: 1px 2px 1px 2px;
+}
+
+#buy {
+	font-size: 12px;
+}
+#trd_news{
+	border-collapse: collapse;
+	position:absolute;
+	bottom:0px;
+	display: none;
+	border: 0px;
+	border-top:1px solid green;
+}
+#k-container {
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	border-right: 1px solid green;
+}
+
+#w-container {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 200px;
+	border-right: 1px solid green;
+}
+
+#p-container {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	left: 200px;
+	width: 600px;
+	border-right: 0px solid green;
+	font-size: 16px;
+}
+
+#p-container table {
+	border: 1px solid green;
+	border-top: 0px;
+	table-layout: fixed;
+	/* 确保列宽固定 */
+}
+
+#text {
+	top: 0px;
+	left: 600px;
+	border: 1px solid green;
+	border-left: 0px solid green;
+	border-top: 0px;
+	border-right: 1px solid green;
+	width: 310px;
+	height: 160px;
+}
+
+#gap,#tips {
+	border-top: 0;
+	border-right: 0;
+	border-left: 1px solid green;
+	left: 0;
+	top: 0;
+	z-index: 1000;
+	width: 150px;
+	height: 40px;
+	align-items: center;
+	justify-content: center;
+	color:red;
+	font-size: 16px;
+	font-weight: bolder;
+}
+
+#gap1 {
+	border-bottom: 0;
+	bottom: 140px;
+	left: 200px;
+	width: 150px;
+	height: 20px;
+}
+
+#gap2 {
+	border-bottom: 0;
+	bottom: 120px;
+	left: 200px;
+	width: 150px;
+	height: 20px;
+}
+
+#gap3 {
+	border-bottom: 0;
+	bottom: 100px;
+	left: 200px;
+	width: 150px;
+	height: 20px;
+}
+
+#gap4 {
+	border-bottom: 0;
+	bottom: 80px;
+	left: 200px;
+	width: 150px;
+	height: 20px;
+	text-align: center;
+}
+
+/* 定义keyframe动画，命名为blink */
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+/* 添加兼容性前缀 */
+@-webkit-keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@-moz-keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@-o-keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+/* 定义blink类*/
+.blink {
+	color: red;
+	animation: blink 1s linear infinite;
+	/* 其它浏览器兼容性前缀 */
+	-webkit-animation: blink 1s linear infinite;
+	-moz-animation: blink 1s linear infinite;
+	-ms-animation: blink 1s linear infinite;
+	-o-animation: blink 1s linear infinite;
+}

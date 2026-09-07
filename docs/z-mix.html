@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="robots" content="noindex">
+	<meta name="referrer" content="no-referrer">
+	<title>Z-Trader-组合面板</title>
+	<script>
+		if (top != self) {
+			top.location.href = self.location.href;
+		}
+	</script>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+		}
+	</style>
+	<script src="./js/jquery-4.0.0.min.js"></script>
+	<script src="./js/locutus.min.js"></script>
+	<script>
+		window.O = {};
+	</script>
+	<script>
+		document.write('\x3Cscript src="./js/config.js?_=' + Math.random() + '">\x3C/script>');
+		document.write('\x3Cscript src="./js/common.js?_=' + Math.random() + '">\x3C/script>');
+	</script>
+	<link rel="icon" href="./favicon.ico" type="image/x-icon">
+	<script>
+		function inverted(f) {
+			for (var i = 0; i <= 4; i++) {
+				document.getElementById('if' + i).contentWindow.inverted(f);
+			}
+		}
+		$(function() {
+			$_GET['code'] = $_GET['code'] ?? "KQ.m@DCE.v";
+			$_GET['klType'] = $_GET['klType'] ?? 1;
+			$_GET['trdEnv'] = $_GET['trdEnv'] ?? 0;
+			var frames = [{
+				src: `./z-trader.html?_t=${Math.random()}&code=KQD.m@CBOT.MYM&klType=${$_GET['klType']}&pmode=4&trdEnv=0`,
+				height: 40,
+				width: 19,
+				left: 0,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				id: "if0"
+			}, {
+				src: `./z-trader.html?_t=${Math.random()}&code=KQD.m@CME.MNQ&klType=${$_GET['klType']}&pmode=4&trdEnv=0`,
+				height: 40,
+				width: 19,
+				left: 1,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				id: "if1"
+			}, {
+				src: `./z-trader.html?_t=${Math.random()}&code=KQ.m@SHFE.ag&klType=${$_GET['klType']}&pmode=4&trdEnv=0`,
+				height: 40,
+				width: 19,
+				left: 1,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				id: "if2"
+			}, {
+				src: `./z-trader.html?_t=${Math.random()}&code=KQ.m@SHFE.au&klType=${$_GET['klType']}&pmode=4&trdEnv=0`,
+				height: 40,
+				width: 19,
+				left: 1,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				id: "if3"
+			}, {
+				src: `./z-trader.html?_t=${Math.random()}&code=KQ.m@CFFEX.IF&klType=${$_GET['klType']}&pmode=4&trdEnv=0`,
+				height: 40,
+				width: 24,
+				left: 1,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				id: "if4"
+			}, {
+				src: `./z-trader.html?_t=${Math.random()}&code=${$_GET['code']}&klType=${$_GET['klType']}&pmode=1&trdEnv=${$_GET['trdEnv']}`,
+				height: 60,
+				width: 100,
+				left: 0,
+				top: 1,
+				right: 0,
+				bottom: 0,
+				id: "if5"
+			}, ];
+			for (var i in frames) {
+				var o = frames[i];
+				$('<iframe>', {
+					id: o.id,
+					src: o.src,
+					margin: 0,
+					marginwidth: 0,
+					marginheight: 0,
+					frameborder: 0,
+					scrolling: "no",
+					height: $(window).height() * o.height / 100 - o.top - o.bottom,
+					width: $(window).width() * o.width / 100 - o.left - o.right,
+					css: {
+						padding: 0,
+						margin: 0,
+						float: "left",
+						borderLeft: o.left + "px solid green",
+						borderRight: o.right + "px solid green",
+						borderTop: o.top + "px solid green",
+						borderBottom: o.bottom + "px solid green"
+					}
+				}).appendTo('body');
+			}
+			window.addEventListener('resize', function() {
+				window.top.location.reload();
+			});
+			document.addEventListener("wheel", function(e) {
+				e.preventDefault();
+			}, {
+				passive: false,
+				capture: false
+			});
+			document.addEventListener('keydown', function(e) {
+				document.getElementById('if5').contentDocument.dispatchEvent(new KeyboardEvent('keydown', {
+					keyCode: e.keyCode
+				}));
+			}, false);
+			document.addEventListener('keyup', function(e) {
+				document.getElementById('if5').contentDocument.dispatchEvent(new KeyboardEvent('keyup', {
+					keyCode: e.keyCode
+				}));
+			}, false);
+		});
+	</script>
+</head>
+
+<body></body>
+
+</html>

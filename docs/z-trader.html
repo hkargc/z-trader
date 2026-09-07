@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="robots" content="noindex">
+	<meta name="referrer" content="no-referrer">
+	<title>Z-Trader-操作平台</title>
+	<script>
+		if (top !== self) {
+			//top.location.href = self.location.href;  
+		}
+	</script>
+	<script src="./js/HackTimer.silent.min.js"></script>
+	<script src="./js/jquery-4.0.0.min.js"></script>
+	<script src="./js/jquery-ui/jquery-ui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="./js/jquery-ui/jquery-ui.min.css">
+	<script src="./js/long.min.js"></script>
+	<script src="./js/dexie.min.js"></script>
+	<script src="./js/paipan.min.js"></script>
+	<script src="./js/locutus.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-base.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-stock.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-annotations.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-ui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.14.1/css/anychart-ui.min.css">
+	<script>
+		window.O = { //必须放在common.js之前
+			uid: max(1, +$_COOKIE['UID']),
+			day: 0,
+			pmode: 1
+		};
+	</script>
+	<script>
+		document.write('\x3Cscript src="./js/config.js?_=' + Math.random() + '">\x3C/script>');
+		document.write('\x3Cscript src="./js/common.js?_=' + Math.random() + '">\x3C/script>');
+		document.write('\x3Cscript src="./js/z.hub.js?_=' + Math.random() + '">\x3C/script>');
+		document.write('\x3Cscript src="./js/z-trader.js?_=' + Math.random() + '">\x3C/script>');
+	</script>
+	<link rel="stylesheet" type="text/css" href="./styles/z-trader.css">
+	<style>
+		body {
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			overflow-x: hidden;
+			overflow-y: hidden;
+			padding: 0;
+			margin: 0;
+		}
+		.anychart-loader {
+			z-index: 100 !important;
+		}
+		.anychart-plot-controls {
+			visibility: hidden;
+		}
+	</style>
+	<link rel="icon" href="./favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+	<div id="k-container" style="display:none;"></div><!-- 主图:K线图区域 -->
+	<div id="gap" class="n" style="display:none;"></div><!-- 主图左上角显示 -->
+	<div id="tips" class="n" style="display:none;"></div><!-- 主图右上角时钟/价变 -->
+	<div id="text" class="n" style="display:none;"></div><!-- 主图重要事件 -->
+	<div id="gap1" class="n" style="display:none;"></div><!-- 主图左下角 -->
+	<div id="gap2" class="n" style="display:none;"></div><!-- 主图左下角 -->
+	<div id="gap3" class="n" style="display:none;"></div><!-- 主图左下角 -->
+	<div id="gap4" class="n" style="display:none;"><!-- 主图左下角 -->
+		<input type="checkbox" title="街货" name="street" onclick="showVol($(this).is(':checked'))" checked="checked">
+		<input type="checkbox" title="打点" name="showfills" onclick="showfills($(this).is(':checked'), true)" style="margin-left:2px;">
+		<input type="checkbox" title="翻转" name="inverted" onclick="inverted($(this).is(':checked'), true)" style="margin-left:2px;">
+		<input type="checkbox" title="锁定" name="locker" style="margin-left:2px;">
+	</div>
+	<div id="opt1" class="opt" style="display:none;z-index:100;"><!-- 主图正下方订单按钮:多头区 -->
+		<button id="btn0" disabled="disabled" onclick="PlaceOrder(1, true)">抢多</button>
+		<button id="btn1" disabled="disabled" onclick="PlaceOrder(1, false)">开多</button>
+	</div>
+	<div id="opt2" class="opt" style="display:none;z-index:100;"><!-- 主图正下方订单按钮:空头区 -->
+		<button id="btn2" disabled="disabled" onclick="PlaceOrder(3, true)">抢空</button>
+		<button id="btn3" disabled="disabled" onclick="PlaceOrder(3, false)">开空</button>
+	</div>
+	<div id="opt3" class="opt" style="display:none;z-index:100;"><!-- 主图正下方订单按钮:方向区 -->
+		<button id="btn4" disabled="disabled" onclick="saveAll(+1)">上移</button>
+		<button id="btn5" disabled="disabled" onclick="saveAll(-1)">下移</button>
+	</div>
+	<div id="opt4" class="opt" style="display:none;z-index:100;width:250px;"><!-- 主图正下方订单按钮:状态区 -->
+		<button id="btn6" disabled="disabled" onclick="saveAll(5)">抢出</button>
+		<button id="btn7" disabled="disabled" onclick="ModifyOrder(2)">撤单</button>
+		<button id="btn8" disabled="disabled" onclick="ModifyOrder(3)">失效</button>
+		<button id="btn9" disabled="disabled" onclick="ModifyOrder(4)">生效</button>
+		<button id="btn10" disabled="disabled" onclick="saveAll(0)">平出</button>
+	</div>
+	<div id="buttons" style="display:none;"><!-- 主图正上方按钮:复盘区 -->
+		<button onclick="removeLine(true)">全删</button>
+		<button onclick="removeLine(false)">删除</button>
+		<button onclick="createLine()">添加</button>
+		<input type="checkbox" title="打点" name="showfills" onclick="showfills($(this).is(':checked'), true)">
+		<input type="checkbox" title="翻转" name="inverted" onclick="inverted($(this).is(':checked'), true)">
+		<input type="checkbox" title="均差" name="pivoted" onclick="pivoted($(this).is(':checked'))">
+	</div>
+	<div id="w-container" style="display:none;"></div><!-- 窝轮街货图 -->
+	<div id="p-container" style="display:none;"><!-- 盘口数据:买卖十档,实时逐笔 -->
+		<table style="float:left;width:300px;" id="bookers"><!-- 买卖十档 -->
+			<tr>
+				<td colspan="2" style="text-align:center;"><span>&nbsp;</span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+			<tr>
+				<td><span>--</span><span style='float:right;color:#00AA3B'></span></td>
+				<td><span>--</span><span style='float:right;color:#FF0000'></span></td>
+			</tr>
+		</table>
+		<table style="float:left;width:300px;border-left:0px;" id="tickers"><!-- 实时逐笔 -->
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<tr>
+				<td>--</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+		</table>
+	</div>
+	<div id="buy" style="display:none;"><!-- 买卖窗口 -->
+		<table class="line_a">
+			<tr>
+				<td>代码:</td>
+				<td><input type='text' id="buy_code" autocomplete="off" style="width:125px;" onchange="trd_getinfo()"></td>
+				<td><select style="width:100px;" id="trd_codes" onchange="$('#buy_code').val(this.value);trd_getinfo();"></select></td>
+			</tr>
+			<tr>
+				<td>名称:</td>
+				<td colspan="2"><span id="buy_name"></span></td>
+			</tr>
+			<tr>
+				<td>价格:</td>
+				<td><input type="button" value="-" style="width:22px;" onclick="$('#buy_price').val(gear_down($('#buy_price').val(), 1, $('#buy_code').val()));trd_calc();"><input type='text' id='buy_price' autocomplete="off" onchange="trd_calc();" style="width:80px;"><input type="button" value="+" style="width:23px;" onclick="$('#buy_price').val(gear_up($('#buy_price').val(), 1, $('#buy_code').val()));trd_calc();"></td>
+				<td><select id="buy_select" onchange="$('#buy_price').val(this.value);" style="width:100px;"></select></td>
+			</tr>
+			<tr>
+				<td>数量:</td>
+				<td>
+					<input type="button" value="-" style="width:22px;" onclick="$('#buy_qty').val(Math.max(0, intval($('#buy_qty').val()) - 1));trd_calc();"><input type='text' id='buy_qty' autocomplete="off" style="width:80px;" onchange="trd_calc();"><input type="button" value="+" style="width:23px;" onclick="$('#buy_qty').val(intval($('#buy_qty').val()) + 1);trd_calc();">
+				</td>
+				<td>手<span id="buy_lotsize"></span></td>
+			</tr>
+			<tr>
+				<td>金额:</td>
+				<td colspan="2"><span id="buy_total"></span></td>
+			</tr>
+			<tr>
+				<td><input type="button" value="拉取" onclick="trd_getinfo()"></td>
+				<td colspan="1" style="text-align:center;">
+					<input type="hidden" id="buy_lot">
+					<input type="hidden" id="buy_trdSide">
+					<input type="hidden" id="buy_id">
+					<input type="button" id="buy_submit" value="*" onclick="trd_submit();">
+				</td>
+				<td>
+					<input type="button" style="display:block;" value="取消" onclick="$('#buy').dialog('close');">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="trader" class="trader" style="display:none;"><!-- 页面交易区 -->
+		<table class="line_a" style="width:100%;padding:0px;margin:0px;" id="trd_fund"><!-- 资金相关 -->
+			<tr>
+				<td><input type="button" value="开多" disabled="disabled" id="trd1" onclick="trd_dialog('', 1, 0);"></td>
+				<td><input type="button" value="开空" disabled="disabled" id="trd3" onclick="trd_dialog('', 3, 0);"></td>
+				<td><input type="button" value="买熊" disabled="disabled" id="trd8" onclick="trd_dialog('', 1, 4);"></td>
+				<td><input type="button" value="买牛" disabled="disabled" id="trd7" onclick="trd_dialog('', 1, 3);"></td>
+				<td>今日:<span class="td_plVal">0</span></td>
+				<td>持仓:<span class="plVal">0</span></td>
+				<td>费用:<span class="new_heji">0</span></td>
+				<td>更新:<span class="uptime">00:00:00</span></td>
+			</tr>
+		</table>
+		<table class="line_a" style="width:100%;padding:0px;margin:0px;" id="trd_position"><!-- 持仓列表 -->
+			<tr>
+				<th>代码</th>
+				<th>名称</th>
+				<th>方向</th>
+				<th>持有数量@市价</th>
+				<th>可用数量</th>
+				<th>成本价</th>
+				<th>市值</th>
+				<th>盈亏比例</th>
+				<!--<th>盈亏金额</th>-->
+				<th>今日盈亏</th>
+				<!--<th>今日成交额</th>
+				<th>今日买入@均价</th>
+				<th>今日卖出@均价</th>-->
+				<th>操作</th>
+			</tr>
+		</table>
+		<table class="line_a" style="width:100%;padding:0px;margin:0px;" id="trd_order"><!-- 订单列表 -->
+			<tr>
+				<th style="padding:0px;">
+					<select style="width:65px;" onchange="trd_show(true);" id="trd_show_select">
+						<option value="0">全部</option>
+						<option value="11">已成交</option>
+						<option value="22">失效</option>
+						<option value="5" selected='selected'>待成交</option>
+					</select>
+				</th>
+				<th>方向</th>
+				<th>代码</th>
+				<th>名称</th>
+				<th>订单价格</th>
+				<th>订单手数</th>
+				<th>已成交@均价</th>
+				<th>操作</th>
+				<th>操作</th>
+				<th>最后更新</th>
+			</tr>
+		</table>
+		<table class="line_a" style="width:100%;padding:0px;margin:0px;" id="trd_news"></table><!-- 资讯区 -->
+	</div>
+</body>
+
+</html>
