@@ -2906,7 +2906,7 @@
 					pmode: pmode,
 					trdEnv: trdEnv
 				}), time() + 365 * 24 * 60 * 60, '/');
-				let url = `./mix.html?_t=${Math.random()}&code=${code}&klType=${klType}&trdEnv=${trdEnv}`; //组合页面
+				let url = `./z-mix.html?_t=${Math.random()}&code=${code}&klType=${klType}&trdEnv=${trdEnv}`; //组合页面
 				if(in_array(pmode, [1, 2, 4, 5])){ //单页显示
 					url = `./z-trader.html?_t=${Math.random()}&code=${code}&klType=${klType}&pmode=${pmode}&trdEnv=${trdEnv}`;
 				}
