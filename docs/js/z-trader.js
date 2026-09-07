@@ -21,7 +21,7 @@
 task = new Array(); //已在common.js中定义
 task[1001] = function(s2c) { //成功连上了,先连行情再连交易
 	if (empty(s2c.wk) == true) { //来自行情连接
-		
+
 	}
 	if (empty(s2c.wk) == false) { //来自交易连接
 		Z.connID = l2s(s2c.connID); //只有下单处需要这个
@@ -156,6 +156,10 @@ task[3219] = function(s2c) { //交易日期
 	}
 	let dn = ceil((prefs.cpoints + 60) * pn / kn); //多取60根以便计算均线
 
+	if (O.klType == 2) { //日线拿N年
+		dn = min(trades.length - 1, 250 * 5) - O.day;
+	}
+
 	Z.Qot_RequestHistoryKL(O.code, O.klType, trades[O.day + dn], O.date + 33 * 60 * 60, 0, '', [], 1, 0); //第三步:获取K线
 };
 task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用origin_code,两个拼起来
@@ -168,6 +172,12 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 	let zero = mktime(0, 0, 0); //今天0点
 	for (let i in s2c['klList']) {
 		let a = s2c['klList'][i];
+
+		let x = window.klines.at(-1); //最后那一根
+		if (x && empty(a['lastClosePrice'])) { //如平台无此字段,则此处补上
+			a['lastClosePrice'] = x[4];
+		}
+
 		let k = K(a);
 		if (a['timestamp'] <= zero - 8 * 60 * 60) { //昨天16:00的当成昨收价[这个数值只针对港股]
 			Q['lastClosePrice'] = a['closePrice'];
@@ -175,9 +185,9 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 		let b = s2c['klList'][i * 1 + 60];
 		let c = s2c['klList'][i * 1 + prefs.cpoints + 60];
 		if (b && c && (b['timestamp'] < (O.date + 9 * 60 * 60))) { //多取60根以便计算均线,当天的全部要用于显示水平线
-			continue;
+			//continue;
 		}
-		Q['curTimes'] = a['timestamp'];
+
 		Q['curPrice'] = a['closePrice']; //最后一根当成最新价
 		low = min(low, a['lowPrice']);
 		high = max(high, a['highPrice']);
@@ -205,15 +215,16 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 	let s = "";
 	let a = fees(Q['curPrice'], Q['code']); //动态手续费
 
-	s = `${Q['name']}:${Q['code']}<br>`;
-	s += array_first(Q['props'][O.klType]) + "档/" + (prefs.tickInterval * Q['contractSize']).toFixed(3) + "元/格;<br>";
-	s += (Q['minVar'] * Q['contractSize']).toFixed(3) + "元/" + Q['minVar'] + "点/档;";
-	s += `${KL2SUB[O.klType][1]}<br>`;
+	s = `${Q['name']}<br>`;
+	s += `code:${Q['code']}<br>`;
 	s += `owner_code:${Q['owner_code']}<br>`;
 	s += `origin_code:${Q['origin_code']}<br>`;
-	s += `最多${Q['props']['maxq']}单;每单${Q['props']['lots']}手;每手${Q['lotSize']}股;<br>`;
-	s += `保证金:${(Q['props']['marg'] * Q['curPrice'] * Q['contractSize'] / 100).toFixed(0)};`;
-	s += `手续费:${a[0]} + ${a[1]}`;
+	s += `保证金:${(Q['props']['marg'] * Q['curPrice'] * Q['contractSize'] / 100).toFixed(0)};<br>`;
+	s += `手续费:${a[0]} + ${a[1]};<br>`;
+	s += array_first(Q['props'][O.klType]) + "档/" + (prefs.tickInterval * Q['contractSize']).toFixed(3) + "元/格;<br>";
+	s += (Q['minVar'] * Q['contractSize']).toFixed(3) + "元/" + Q['minVar'] + "点/档;";
+	s += `${KL2SUB[O.klType][1]};<br>`;
+	s += `最多${Q['props']['maxq']}单;每单${Q['props']['lots']}手;每手${Q['lotSize']}股;`;
 	$('#gap').html(s);
 	let q = format(Q['curPrice'] - Q['lastClosePrice'], 3);
 	if (in_array(O.pmode, [4])) { //简易图模式:只需要初始化主图和订阅本尊实时K线
@@ -261,9 +272,9 @@ task[2001] = function(s2c) { //获取交易账号响应
 			return Z.Trd_GetHistoryOrderFillList(O.date + 9 * 60 * 60, O.date + 33 * 60 * 60, [], [], trdMarket); //当天9点到第二天9点.此接口限频:30秒10次
 		}
 	}
-	in_array(1, Z.secMarket) || $('#w-container').hide(); //仅香港市场需要考虑牛熊证街货
+	in_array(Z.secMarket, [1]) || $('#w-container').hide(); //仅香港市场需要考虑牛熊证街货
 	in_array(O.pmode, [1, 2, 3]) && Z.Trd_SubAccPush(TrdMarkets); //订阅交易推送
-	in_array(O.pmode, [1, 2]) && in_array(1, Z.secMarket) && Z.Qot_GetWarrant(Q['owner_code'], { //第五步:获取牛熊证展示街货图
+	in_array(O.pmode, [1, 2]) && in_array(Z.secMarket, [1]) && Z.Qot_GetWarrant(Q['owner_code'], { //第五步:获取牛熊证展示街货图
 		'status': 1,
 		'typeList': [3, 4],
 		'streetMin': 0.001,
@@ -299,6 +310,10 @@ task[2222] = function(s2c) { //获取历史成交列表响应,只有复盘模式
 	}
 };
 task[3210] = function(s2c) { //获取牛熊证响应
+	if(empty(s2c['warrantDataList'])){
+		s2c['warrantDataList'] = [];
+		s2c['lastPage'] = true;
+	}
 	G.nx += s2c['warrantDataList'].length;
 	for (let i in s2c['warrantDataList']) {
 		let a = s2c['warrantDataList'][i];
@@ -307,10 +322,10 @@ task[3210] = function(s2c) { //获取牛熊证响应
 		}
 		let k1 = 'K' + a['type']; //确保数组的顺序
 		let k2 = 'K' + a['recoveryPrice'];
-		if (window.NX[k1] == undefined) {
+		if (empty(window.NX[k1])) {
 			window.NX[k1] = [];
 		}
-		if (window.NX[k1][k2] == undefined) {
+		if (empty(window.NX[k1][k2])) {
 			window.NX[k1][k2] = 0;
 		}
 		window.NX[k1][k2] += parseInt(l2s(a['streetVol']));
@@ -437,7 +452,6 @@ task[3001] = function(s2c) { //订阅响应,获取origin_code-K线
 task[3007] = function(s2c) { //K线推送响应-这里一般每次只推送一根
 	for (let i in s2c['klList']) {
 		let a = s2c['klList'][i];
-		let k = K(a);
 		if (s2c['security']['code'] == Q['owner_code']) {
 			Q['ownPrice'] = a['closePrice'];
 			if (window.whart) { //街货图已经就绪
@@ -475,9 +489,22 @@ task[3007] = function(s2c) { //K线推送响应-这里一般每次只推送一�
 		if (empty(window.scroller)) {
 			continue;
 		}
-		let removeFromStart = (Q['curTimes'] >= a['timestamp']) ? false : true;
+
+		let x = window.klines.at(-1); //最后那一根
+		let y = window.klines.at(-2); //倒数第二根
+		if (x && y && empty(a['lastClosePrice'])) { //如平台无此字段,则此处补上
+			if (x[0] != a['timestamp'] * 1000) {
+				a['lastClosePrice'] = x[4];
+			}
+			if (x[0] == a['timestamp'] * 1000) {
+				a['lastClosePrice'] = y[4];
+			}
+		}
+
+		let k = K(a);
+		let removeFromStart = (x[0] >= k[0]) ? false : true;
 		window.table.addData([k], removeFromStart); //如果是一根新的则要把最左边那根移出
-		if (Q['curTimes'] > a['timestamp']) { //推了早于最后K线的数据
+		if (x[0] > k[0]) { //推了早于最后K线的数据
 			continue;
 		}
 		if (removeFromStart) { //新的一根入栈
@@ -486,7 +513,6 @@ task[3007] = function(s2c) { //K线推送响应-这里一般每次只推送一�
 		if (window.annotation21) {
 			window.annotation21.valueAnchor(a['closePrice']);
 		}
-		Q['curTimes'] = a['timestamp']; //K方法把时间转成了毫秒
 		Q['curPrice'] = a['closePrice'];
 		if (a['closePrice'] >= prefs.cYmax - 3 * prefs.tickInterval) { //增加展示空间,调整滚动条比例
 			prefs.cYmax = ceil(a['closePrice'] / prefs.tickInterval) * prefs.tickInterval + 6 * prefs.tickInterval;
@@ -649,7 +675,7 @@ task[2201] = function(s2c) { //查询未完成订单-响应
 				G.orders[id] = o; //仅展示自己的
 				G.annotations[id] = G.ctrl.add(horizontal(o, false));
 				selectAnnotation(id);
-				if (in_array(o.trdSide, [2, 4])) { //卖出沽出展示成本价线
+				if (in_array(o.trdSide, [2, 4])) { //平多/平空展示成本价线
 					G.annotation2[id] = G.ctrl.add(horizontal(o, true));
 				}
 			}
@@ -983,7 +1009,7 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 						$(this).css('border-color', themeColor);
 					});
 					$pwdInput.on('click', e => e.stopPropagation());
-					
+
 					const $wrapper = $dlg.parent();
 					$wrapper.css({
 						"border": "none",
@@ -1058,7 +1084,7 @@ task[2208] = function(s2c) { //推送订单更新
 			} else {
 				G.annotations[id] = G.ctrl.add(horizontal(o, false));
 				selectAnnotation(id);
-				if (in_array(o.trdSide, [2, 4])) { //卖出沽出
+				if (in_array(o.trdSide, [2, 4])) { //平多/平空
 					G.annotation2[id] = G.ctrl.add(horizontal(o, true));
 				}
 			}
@@ -1142,7 +1168,7 @@ task[1003] = function(s2c) { //系统通知
 		let data = json_decode(s2c.event.desc);
 		return alert('[后端推送]信息:' + data["desc"]);
 	}
-	if ((s2c.type == -1) && in_array(O.pmode, [1])) { //资讯及重大事件
+	if ((s2c.type == -1) && empty(s2c.wk) && in_array(O.pmode, [1])) { //借道行情连接:资讯及重大事件
 		let gz = new Array();
 		let y = date('Y');
 		let m = date('n');
@@ -1383,6 +1409,35 @@ $(function() {
 						case 86: { //V
 							inverted(kvs.inverted ? false : true, true);
 							break;
+						}
+						case 98: //小键盘区的2
+						case 104: { //小键盘区的8
+							let list = [];
+							let next = in_array(e.keyCode, [98]) ? +1 : -1; //向下浏览
+							window.db.table("z-stocks").each(function(a) {
+								list.push({
+									code: a['code'],
+									sort: a['sort'] || 0
+								});
+							}).then(function() {
+								list.sort(function(a, b) { //从大到小排列
+									return b.sort - a.sort;
+								});
+								for (let k = 0; k < list.length; k++) {
+									if (list[k]['code'] != Q.code) {
+										continue;
+									}
+									list[k + next] && window.open(G.path + '?' + http_build_query(array_merge($_GET, {
+										'code': list[k + next]['code']
+									})), '_self')
+
+									break;
+								}
+							});
+							break;
+						}
+						default: {
+							//console.log(e.keyCode)
 						}
 					}
 					is_int(day) && window.open(G.path + '?' + http_build_query(array_merge($_GET, {

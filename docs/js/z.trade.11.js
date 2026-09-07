@@ -1003,7 +1003,7 @@ _this.task[2202] = function(m) {
 			'retMsg': '类型不正确!'
 		});
 	}
-	let trdSide = intval(m['c2s']['trdSide']); //1买入2卖出3沽入4沽出
+	let trdSide = intval(m['c2s']['trdSide']); //1开多2平多3开空4平空
 	let remark = sprintf("%.3f", floatval(m['c2s']['remark'])); //记录成本价
 	let contractSize = sprintf("%.3f", floatval(m['c2s']['o']['contractSize']));
 	if (in_array(trdSide, [1, 2, 3, 4]) == false) { //这里与富途不同,富途只有1,2
@@ -1031,11 +1031,11 @@ _this.task[2202] = function(m) {
 	}
 	let direction;
 	let offset;
-	if (in_array(trdSide, [1])) { //如果买入
+	if (in_array(trdSide, [1])) { //如果开多
 		direction = "BUY";
 		offset = "OPEN"; //OPEN=开仓, CLOSE=平仓, CLOSETODAY=平今
 	}
-	if (in_array(trdSide, [3])) { //如果沽入
+	if (in_array(trdSide, [3])) { //如果开空
 		if (m['c2s']['o']['secType'] != 10) { //仅期货支持做空
 			return _this.post(m, {
 				'retType': -1,
@@ -1058,7 +1058,7 @@ _this.task[2202] = function(m) {
 			offset = "CLOSETODAY";
 		}
 	}
-	if (in_array(trdSide, [4])) { //如果沽出,要看持仓
+	if (in_array(trdSide, [4])) { //如果平空,要看持仓
 		if (qty > (intval(p['pos_short']) - intval(p['pos_short_frozen']))) {
 			return _this.post(m, {
 				'retType': -1,

@@ -158,7 +158,7 @@ function do_stock(code) {
 		orderIDEx = intval(orderIDEx);
 		let a = _this.orders[orderIDEx];
 		let b = []; //更改了哪些字段
-		if (in_array(a['trdSide'], [1, 4])) { //买入,沽出
+		if (in_array(a['trdSide'], [1, 4])) { //开多,平空
 			if (fAsk && (fAsk['price'] <= a['price']) && (o['svrRecvTime'] >= a['updateTimestamp'])) { //大于卖一,则从卖一开始逐档成交
 				for (let i in o['orderBookAskList']) { //从卖一开始
 					let Ask = o['orderBookAskList'][i];
@@ -187,7 +187,7 @@ function do_stock(code) {
 							'code': a['code'],
 							'secType': a['secType'],
 							'createTimestamp': a['createTimestamp'],
-							'msg': "成功" + (a['trdSide'] == 1 ? "买入" : "沽出") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+							'msg': "成功" + (a['trdSide'] == 1 ? "开多" : "平空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 						});
 					}
 					if (a['orderStatus'] == 11) {
@@ -227,7 +227,7 @@ function do_stock(code) {
 							'code': a['code'],
 							'secType': a['secType'],
 							'createTimestamp': a['createTimestamp'],
-							'msg': "成功" + (a['trdSide'] == 1 ? "买入" : "沽出") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+							'msg': "成功" + (a['trdSide'] == 1 ? "开多" : "平空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 						});
 					}
 					if (a['orderStatus'] == 11) {
@@ -260,11 +260,11 @@ function do_stock(code) {
 					'code': a['code'],
 					'secType': a['secType'],
 					'createTimestamp': a['createTimestamp'],
-					'msg': "成功" + (a['trdSide'] == 1 ? "买入" : "沽出") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+					'msg': "成功" + (a['trdSide'] == 1 ? "开多" : "平空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 				});
 			}
 		}
-		if (in_array(a['trdSide'], [2, 3])) { //卖出,沽入
+		if (in_array(a['trdSide'], [2, 3])) { //卖出,开空
 			if (fBid && (a['price'] <= fBid['price']) && (o['svrRecvTime'] >= a['updateTimestamp'])) { //小于买一,则从买一开始逐档成交
 				for (let i in o['orderBookBidList']) { //从买一开始
 					let Bid = o['orderBookBidList'][i];
@@ -293,7 +293,7 @@ function do_stock(code) {
 							'code': a['code'],
 							'secType': a['secType'],
 							'createTimestamp': a['createTimestamp'],
-							'msg': "成功" + (a['trdSide'] == 2 ? "卖出" : "沽入") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+							'msg': "成功" + (a['trdSide'] == 2 ? "平多" : "开空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 						});
 					}
 					if (a['orderStatus'] == 11) {
@@ -333,7 +333,7 @@ function do_stock(code) {
 							'code': a['code'],
 							'secType': a['secType'],
 							'createTimestamp': a['createTimestamp'],
-							'msg': "成功" + (a['trdSide'] == 2 ? "卖出" : "沽入") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+							'msg': "成功" + (a['trdSide'] == 2 ? "平多" : "开空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 						});
 					}
 					if (a['orderStatus'] == 11) {
@@ -366,7 +366,7 @@ function do_stock(code) {
 					'code': a['code'],
 					'secType': a['secType'],
 					'createTimestamp': a['createTimestamp'],
-					'msg': "成功" + (a['trdSide'] == 2 ? "卖出" : "沽入") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
+					'msg': "成功" + (a['trdSide'] == 2 ? "平多" : "开空") + fillQty + "@" + a['price'] + "[" + a['name'] + "]"
 				});
 			}
 		}
@@ -447,7 +447,7 @@ function do_position(uid) {
 		if (in_array(a['f'], [0])) { //未清仓
 			p['f'] = a['f']; //标记还有未清仓的
 		}
-		if (in_array(a['trdSide'], [1, 3])) { //买入,沽入
+		if (in_array(a['trdSide'], [1, 3])) { //开多,开空
 			p['plVal'] = floatval(p['plVal']) - floatval(a['fillAvgPrice']) * floatval(a['fillQty']); //盈亏金额
 			p['trdVal'] = floatval(p['trdVal']) + floatval(a['fillAvgPrice']) * floatval(a['fillQty']); //成交总额
 			p['buyQty'] = floatval(p['buyQty']) + floatval(a['fillQty']); //买入总量
@@ -467,7 +467,7 @@ function do_position(uid) {
 				funds['gain'] = floatval(funds['gain']) - floatval(a['price']) * (floatval(a['qty']) - floatval(a['fillQty'])); //现金结余(冻结)
 			}
 		}
-		if (in_array(a['trdSide'], [2, 4])) { //卖出,沽出
+		if (in_array(a['trdSide'], [2, 4])) { //平多,平空
 			p['plVal'] = floatval(p['plVal']) + floatval(a['fillAvgPrice']) * floatval(a['fillQty']); //盈亏金额
 			p['trdVal'] = floatval(p['trdVal']) + floatval(a['fillAvgPrice']) * floatval(a['fillQty']); //成交总额
 			p['sellQty'] = floatval(p['sellQty']) + floatval(a['sellQty']); //卖出总量
@@ -983,7 +983,7 @@ _this.task[2202] = function(m) {
 		});
 	}
 	let direction = in_array(trdSide, [3, 4]) ? 1 : 0;
-	if (in_array(trdSide, [1, 3])) { //如果买入/沽入,要看余额,要看方向(不能同时持有多空)
+	if (in_array(trdSide, [1, 3])) { //如果开多/开空,要看余额,要看方向(不能同时持有多空)
 		if ((trdSide == 3) && (m['c2s']['o']['secType'] != 10)) { //仅期货支持做空
 			return _this.post(m, {
 				'retType': -1,
@@ -1010,7 +1010,7 @@ _this.task[2202] = function(m) {
 			});
 		}
 	}
-	if (in_array(trdSide, [2, 4])) { //如果卖出/沽出,要看持仓
+	if (in_array(trdSide, [2, 4])) { //如果平多/平空,要看持仓
 		let p = _this.positions[_this.uid][direction][code];
 		if (qty > floatval(p['canSellQty'])) {
 			return _this.post(m, {
@@ -1178,7 +1178,7 @@ _this.task[2205] = function(m) {
 				if (in_array(a['orderStatus'], [5, 10])) { //已经是生效状态
 					continue;
 				}
-				if (in_array(a['trdSide'], [1, 3])) { //如果买入/沽入,要看余额
+				if (in_array(a['trdSide'], [1, 3])) { //如果开多/开空,要看余额
 					if ((a['qty'] * a['price'] - a['fillQty'] * a['fillAvgPrice']) > _this.funds[_this.uid]['cash']) {
 						return _this.post(m, {
 							'retType': -1,
@@ -1186,7 +1186,7 @@ _this.task[2205] = function(m) {
 						});
 					}
 				}
-				if (in_array(a['trdSide'], [2, 4])) { //如果卖出/沽出,要看持仓
+				if (in_array(a['trdSide'], [2, 4])) { //如果平多/平空,要看持仓
 					if ((a['qty'] - a['fillQty']) > _this.positions[_this.uid][a['direction']][a['code']]['canSellQty']) {
 						return _this.post(m, {
 							'retType': -1,
@@ -1230,7 +1230,7 @@ _this.task[2205] = function(m) {
 				'retMsg': '低于成交数量!'
 			});
 		}
-		if (in_array(o['trdSide'], [1, 3])) { //如果买入/沽入,要看余额
+		if (in_array(o['trdSide'], [1, 3])) { //如果开多/开空,要看余额
 			if ((qty * price - o['fillQty'] * o['fillAvgPrice']) > _this.funds[_this.uid]['cash']) {
 				return _this.post(m, {
 					'retType': -1,
@@ -1238,7 +1238,7 @@ _this.task[2205] = function(m) {
 				});
 			}
 		}
-		if (in_array(o['trdSide'], [2, 4])) { //如果卖出/沽出,要看持仓
+		if (in_array(o['trdSide'], [2, 4])) { //如果平多/平空,要看持仓
 			if ((qty - o['fillQty']) > (_this.positions[_this.uid][o['direction']][o['code']]['canSellQty'] + (in_array(o['orderStatus'], [5, 10]) ? o['qty'] : 0))) {
 				return _this.post(m, {
 					'retType': -1,
