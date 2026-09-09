@@ -5,7 +5,7 @@
  * @description 基于 AnyStock 的自动化/半自动化辅助交易工具
  * @copyright   Copyright (c) 2026 [hkargc at gmail dot com]
  * @license     PolyForm Noncommercial License 1.0.0 (仅限非商业用途)
- * @see         {@link https://github.com/hkargc/trader} 项目仓库
+ * @see         {@link https://github.com/hkargc/z-trader} 项目仓库
  * @see         {@link https://polyformproject.org} 协议详情
  * 
  * --------------------------------------------------------------------------
