@@ -1122,7 +1122,7 @@ task[2208] = function(s2c) { //推送订单更新
 			G.Market['position'].push(trdMarket);
 			return Z.Trd_GetPositionList(trdMarket, G.init == false);
 		}
-	}, in_array(o.orderStatus, [2]) ? 500 : 500); //富途持仓接口有延迟
+	}, in_array(o.orderStatus, [2]) ? 800 : 800); //富途持仓接口有延迟
 };
 task[2218] = function(s2c) { //推送新成交,必然伴随着订单更新,即必然调用持仓,即必然会走持仓处的自动挂单
 	if (empty(s2c.orderFill)) {

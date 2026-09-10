@@ -900,12 +900,26 @@ _this.task[2102] = function(m) {
 		}
 		for (let code in NEW.trade[_this.uid]["positions"]) { //前端是先查询持仓,如有仓位再进行自动挂单,所以这里计算出pos_long_frozen是有效的
 			let p = Object.assign(NEW.trade[_this.uid]["positions"][code], W(code)); //注意这里p是持仓的引用,下单处还需要这些
+			
 			p["pos_long"] = intval(p['pos_long_his']) + intval(p['pos_long_today']); //补齐天勤文档上的字段.!!!持仓+订单+成交 这三个并没有保证原子性,所以有数据不一致的概率
 			p["pos_short"] = intval(p['pos_short_his']) + intval(p['pos_short_today']);
+			
+			p["pos_long_frozen"] = intval(p["pos_long_frozen"]);
+			p["pos_short_frozen"] = intval(p["pos_short_frozen"]);
+			
 			p["pos"] = p["pos_long"] - p["pos_short"];
 			p["last_price"] = floatval(p["last_price"]); //市价
+			
 			p["open_price_long"] = floatval(p["open_price_long"]); //多头开仓均价,以开仓价来统计
+			if((p["pos_long"] - p["pos_long_frozen"]) && empty(p["open_price_long"])){ //有持仓但没有拿到成本价
+				p["open_price_long"] = p["last_price"];
+			}
+			
 			p["open_price_short"] = floatval(p["open_price_short"]);
+			if((p["pos_short"] - p["pos_short_frozen"]) && empty(p["open_price_short"])){ //有持仓但没有拿到成本价
+				p["open_price_short"] = p["last_price"];
+			}
+			
 			p["float_profit_long"] = p["pos_long"] * (p["last_price"] - p["open_price_long"]) * p["contractSize"]; //持仓浮动盈亏
 			p["float_profit_short"] = p["pos_short"] * (p["open_price_short"] - p["last_price"]) * p["contractSize"];
 			p["pos_long_remark"] += p["open_price_long"] * p["pos_long"]; //总投入
