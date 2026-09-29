@@ -509,6 +509,7 @@ task[3007] = function(s2c) { //K线推送响应-这里一般每次只推送一�
 		}
 		if (removeFromStart) { //新的一根入栈
 			window.klines.push(k);
+			window.chart.selectRange('points', prefs.cpoints, false);
 		}
 		if (window.annotation21) {
 			window.annotation21.valueAnchor(a['closePrice']);
