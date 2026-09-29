@@ -670,15 +670,15 @@ function gear_down(p, step, code) {
  */
 function K(a) {
 	return [a['timestamp'] * 1000,
-		a['openPrice'],
-		a['highPrice'],
-		a['lowPrice'],
-		a['closePrice'],
+		round(a['openPrice'], 3),
+		round(a['highPrice'], 3),
+		round(a['lowPrice'], 3),
+		round(a['closePrice'], 3),
 		l2s(a['volume']),
-		a['turnover'], //成交额
-		a['turnoverRate'], //换手率
-		a['lastClosePrice'] ? round(a['closePrice'] - a['lastClosePrice'], 2) : '--', //涨跌额
-		a['lastClosePrice'] ? round((a['closePrice'] - a['lastClosePrice']) / a['lastClosePrice'] * 100, 2) + '%' : '--', //涨跌幅
+		round(a['turnover'], 3), //成交额
+		round(a['turnoverRate'], 3), //换手率
+		a['lastClosePrice'] ? round(a['closePrice'] - a['lastClosePrice'], 3) : '--', //涨跌额
+		a['lastClosePrice'] ? round((a['closePrice'] - a['lastClosePrice']) / a['lastClosePrice'] * 100, 3) + '%' : '--', //涨跌幅
 		(a['closePrice'] <= a['openPrice']) ? 'green' : 'red'
 	];
 }
