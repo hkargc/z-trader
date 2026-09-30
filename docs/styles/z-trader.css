@@ -282,14 +282,16 @@
 #buy {
 	font-size: 12px;
 }
-#trd_news{
+
+#trd_news {
 	border-collapse: collapse;
-	position:absolute;
-	bottom:0px;
+	position: absolute;
+	bottom: 0px;
 	display: none;
 	border: 0px;
-	border-top:1px solid green;
+	border-top: 1px solid green;
 }
+
 #k-container {
 	padding: 0;
 	margin: 0;
@@ -342,7 +344,8 @@
 	height: 160px;
 }
 
-#gap,#tips {
+#gapx,
+#tips {
 	border-top: 0;
 	border-right: 0;
 	border-left: 1px solid green;
@@ -353,9 +356,18 @@
 	height: 40px;
 	align-items: center;
 	justify-content: center;
-	color:red;
+	color: red;
 	font-size: 16px;
 	font-weight: bolder;
+}
+
+#gap0 {
+	border-bottom: 0;
+	bottom: 160px;
+	left: 200px;
+	width: 150px;
+	height: 20px;
+	font-size: 14px;
 }
 
 #gap1 {
@@ -364,6 +376,8 @@
 	left: 200px;
 	width: 150px;
 	height: 20px;
+	font-size: 14px;
+	text-align: center;
 }
 
 #gap2 {
@@ -372,6 +386,8 @@
 	left: 200px;
 	width: 150px;
 	height: 20px;
+	font-size: 14px;
+	text-align: center;
 }
 
 #gap3 {
@@ -380,6 +396,8 @@
 	left: 200px;
 	width: 150px;
 	height: 20px;
+	font-size: 14px;
+	text-align: center;
 }
 
 #gap4 {
@@ -388,6 +406,7 @@
 	left: 200px;
 	width: 150px;
 	height: 20px;
+	font-size: 14px;
 	text-align: center;
 }
 

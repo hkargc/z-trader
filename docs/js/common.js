@@ -353,7 +353,7 @@ function position(f) {
 		$('#p-container').css({ //盘口数据:买卖十档,实时逐笔
 			"display": "block"
 		});
-		$('#gap').css({ //主图左上角显示
+		$('#gapx').css({ //主图左上角显示
 			"display": "flex",
 			"width": "200px",
 			"border-left": "0px",
@@ -362,17 +362,19 @@ function position(f) {
 			"font-size": "14px",
 			"color": "green",
 			"left": "0px",
-			"height": "180px",
+			"height": "160px",
 			"justify-content": "flex-start"
 		});
 		$("#text").css({ //主图重要事件
 			"left": "800px",
 			"display": "block"
 		});
-		[1, 2, 3, 4].forEach(function(i, key, a) { //主图左下角
+		[0, 1, 2, 3, 4].forEach(function(i, key, a) { //主图左下角
 			$('#gap' + i).css({
 				"display": "block"
 			});
+		});
+		[1, 2, 3, 4].forEach(function(i, key, a) { //主图正下方订单按钮
 			$('#opt' + i).css({
 				"display": "block"
 			});
@@ -399,7 +401,7 @@ function position(f) {
 			"width": "100px",
 			"left": $('#k-container').width() - 100
 		});
-		$('#gap').css({
+		$('#gapx').css({
 			"display": "flex",
 			"width": "200px",
 			"border-left": "0px",
@@ -408,7 +410,7 @@ function position(f) {
 			"font-size": "14px",
 			"color": "green",
 			"left": "0px",
-			"height": "180px",
+			"height": "160px",
 			"justify-content": "flex-start"
 		});
 		$('#p-container').css({
@@ -418,10 +420,12 @@ function position(f) {
 			"left": "800px",
 			"display": "block"
 		});
-		[1, 2, 3, 4].forEach(function(i, key, a) {
+		[0, 1, 2, 3, 4].forEach(function(i, key, a) { //主图左下角
 			$('#gap' + i).css({
 				"display": "block"
 			});
+		});
+		[1, 2, 3, 4].forEach(function(i, key, a) { //主图正下方订单按钮
 			$('#opt' + i).css({
 				"display": "block"
 			});
@@ -446,7 +450,7 @@ function position(f) {
 			"width": "100px",
 			"left": $('#k-container').width() - 100
 		});
-		$('#gap').css({
+		$('#gapx').css({
 			"display": "flex",
 			"width": "200px",
 			"border-left": "0px",
@@ -455,7 +459,7 @@ function position(f) {
 			"font-size": "14px",
 			"color": "green",
 			"left": "0px",
-			"height": "180px",
+			"height": "160px",
 			"justify-content": "flex-start"
 		});
 	}
@@ -466,7 +470,7 @@ function position(f) {
 			"height": height,
 			"width": width
 		});
-		$('#gap').css({
+		$('#gapx').css({
 			"display": "flex",
 			"width": "200px",
 			"border-left": "0px",
@@ -475,7 +479,7 @@ function position(f) {
 			"font-size": "14px",
 			"color": "green",
 			"left": "0px",
-			"height": "180px",
+			"height": "160px",
 			"justify-content": "flex-start"
 		});
 		$("#buttons").css({
@@ -2215,7 +2219,7 @@ function inverted(f, trigger) {
 				"border-left": "1px solid red",
 				"border-bottom": "1px solid red"
 			});
-			$('#gap').css({
+			$('#gapx').css({
 				"border-right": "1px solid red",
 				"border-bottom": "1px solid red"
 			});
@@ -2246,7 +2250,7 @@ function inverted(f, trigger) {
 				"border-left": "1px solid green",
 				"border-bottom": "1px solid green"
 			});
-			$('#gap').css({
+			$('#gapx').css({
 				"border-right": "1px solid green",
 				"border-bottom": "1px solid green"
 			});

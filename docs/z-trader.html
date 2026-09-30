@@ -60,9 +60,13 @@
 
 <body>
 	<div id="k-container" style="display:none;"></div><!-- 主图:K线图区域 -->
-	<div id="gap" class="n" style="display:none;"></div><!-- 主图左上角显示 -->
+	
 	<div id="tips" class="n" style="display:none;"></div><!-- 主图右上角时钟/价变 -->
 	<div id="text" class="n" style="display:none;"></div><!-- 主图重要事件 -->
+	
+	<div id="gapx" class="n" style="display:none;"></div><!-- 主图左上角 -->
+	
+	<div id="gap0" class="n" style="display:none;"></div><!-- 主图左下角 -->
 	<div id="gap1" class="n" style="display:none;"></div><!-- 主图左下角 -->
 	<div id="gap2" class="n" style="display:none;"></div><!-- 主图左下角 -->
 	<div id="gap3" class="n" style="display:none;"></div><!-- 主图左下角 -->
@@ -72,6 +76,7 @@
 		<input type="checkbox" title="翻转" name="inverted" onclick="inverted($(this).is(':checked'), true)" style="margin-left:2px;">
 		<input type="checkbox" title="锁定" name="locker" style="margin-left:2px;">
 	</div>
+	
 	<div id="opt1" class="opt" style="display:none;z-index:100;"><!-- 主图正下方订单按钮:多头区 -->
 		<button id="btn0" disabled="disabled" onclick="PlaceOrder(1, true)">抢多</button>
 		<button id="btn1" disabled="disabled" onclick="PlaceOrder(1, false)">开多</button>
@@ -91,6 +96,7 @@
 		<button id="btn9" disabled="disabled" onclick="ModifyOrder(4)">生效</button>
 		<button id="btn10" disabled="disabled" onclick="saveAll(0)">平出</button>
 	</div>
+	
 	<div id="buttons" style="display:none;"><!-- 主图正上方按钮:复盘区 -->
 		<button onclick="removeLine(true)">全删</button>
 		<button onclick="removeLine(false)">删除</button>
@@ -99,7 +105,9 @@
 		<input type="checkbox" title="翻转" name="inverted" onclick="inverted($(this).is(':checked'), true)">
 		<input type="checkbox" title="均差" name="pivoted" onclick="pivoted($(this).is(':checked'))">
 	</div>
+	
 	<div id="w-container" style="display:none;"></div><!-- 窝轮街货图 -->
+	
 	<div id="p-container" style="display:none;"><!-- 盘口数据:买卖十档,实时逐笔 -->
 		<table style="float:left;width:300px;" id="bookers"><!-- 买卖十档 -->
 			<tr>

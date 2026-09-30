@@ -221,11 +221,14 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 	s += `origin_code:${Q['origin_code']}<br>`;
 	s += `保证金:${(Q['props']['marg'] * Q['curPrice'] * Q['contractSize'] / 100).toFixed(0)};<br>`;
 	s += `手续费:${a[0]} + ${a[1]};<br>`;
-	s += array_first(Q['props'][O.klType]) + "档/" + (prefs.tickInterval * Q['contractSize']).toFixed(3) + "元/格;<br>";
-	s += (Q['minVar'] * Q['contractSize']).toFixed(3) + "元/" + Q['minVar'] + "点/档;";
-	s += `${KL2SUB[O.klType][1]};<br>`;
-	s += `最多${Q['props']['maxq']}单;每单${Q['props']['lots']}手;每手${Q['lotSize']}股;`;
-	$('#gap').html(s);
+	s += (Q['minVar'] * Q['contractSize']).toFixed(3) + "元/" + Q['minVar'] + "点/档;" + KL2SUB[O.klType][1] + ";<br>";
+	s += array_first(Q['props'][O.klType]) + "档/" + (prefs.tickInterval * Q['contractSize']).toFixed(3) + "元/格;每手" + Q['lotSize'] + "股;<br>";
+	$('#gapx').html(s);
+
+	$('#gap2').html(`最多${Q['props']['maxq']}单;每单<span>${Q['props']['lots']}</span>手;`).css({
+		"color": "red"
+	});
+
 	let q = format(Q['curPrice'] - Q['lastClosePrice'], 3);
 	if (in_array(O.pmode, [4])) { //简易图模式:只需要初始化主图和订阅本尊实时K线
 		$('#tips').html((q > 0 ? '+' : '') + q);
@@ -252,7 +255,7 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 		s += abs(intval(Q['ownPrice'] - Q['curPrice']));
 		s += ']';
 	}
-	$('#gap1').html(s);
+	$('#gap0').html(s);
 };
 task[2001] = function(s2c) { //获取交易账号响应
 	for (let i in s2c.accList) {
@@ -310,7 +313,7 @@ task[2222] = function(s2c) { //获取历史成交列表响应,只有复盘模式
 	}
 };
 task[3210] = function(s2c) { //获取牛熊证响应
-	if(empty(s2c['warrantDataList'])){
+	if (empty(s2c['warrantDataList'])) {
 		s2c['warrantDataList'] = [];
 		s2c['lastPage'] = true;
 	}
@@ -560,7 +563,7 @@ task[3007] = function(s2c) { //K线推送响应-这里一般每次只推送一�
 			s += abs(intval(Q['ownPrice'] - Q['curPrice']));
 			s += ']';
 		}
-		$('#gap1').html(s);
+		$('#gap0').html(s);
 	}
 };
 task[3011] = function(s2c) { //推送逐笔
@@ -873,8 +876,12 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 		e.preventDefault();
 	});
 	$(document).keydown(function(e) { //快捷键:触发按键
-		switch (e.keyCode) {
-			case 32: { //space 空格键
+		if (e.shiftKey || e.altKey || e.metaKey) {
+			return;
+		}
+		let lots = 0; //动态调整每单手数
+		switch (e.code) {
+			case 'Space': { //space 空格键
 				if (empty($('#btn8').attr('disabled'))) { //订单失效生效
 					$('#btn8').click();
 				}
@@ -883,17 +890,17 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 				}
 				break;
 			}
-			case 38: { //up
+			case 'ArrowUp': { //up
 				$('#btn4').click(); //上移
 				break;
 			}
-			//case 65:{ //A
+			//case 'KeyA':{ //A
 			//}
-			//case 68:{ //D
+			//case 'KeyD':{ //D
 			//}
-			case 37: { //left
+			case 'ArrowLeft': { //left
 			}
-			case 39: { //right
+			case 'ArrowRight': { //right
 				if (G.ctrlKey == true) { //强出
 					$('#btn6').click();
 				}
@@ -902,50 +909,111 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 				}
 				break;
 			}
-			case 40: { //down
+			case 'ArrowDown': { //down
 				$('#btn5').click(); //下移
 				break;
 			}
-			case 13: { //Enter
+			case 'Enter': { //Enter
 				break;
 			}
-			case 76: { //L
+			case 'KeyL': { //L
 				if ($('#pwd').length == 0) { //锁屏
 					preloader(true);
 				}
 				break;
 			}
-			case 86: { //V
+			case 'KeyV': { //V
 				if (G.ctrlKey == false) {
 					inverted(kvs.inverted ? false : true, true);
 				}
 				break;
 			}
-			case 83: { //S,选中下一个订单
+			case 'KeyS': { //S,选中下一个订单
 				selectNextAnnotation(kvs.inverted ? 1 : -1);
 				break;
 			}
-			case 87: { //W,选中上一个订单
+			case 'KeyW': { //W,选中上一个订单
 				selectNextAnnotation(kvs.inverted ? -1 : 1);
 				break;
 			}
-			case 17: { //Ctrl 按下控制键
+			case 'ControlLeft': //Ctrl 按下控制键（左Ctrl）
+			case 'ControlRight': { //Ctrl 按下控制键（右Ctrl）
 				if (G.ctrlKey == false) {
 					G.ctrlKey = true;
 					buttons(!G.lock);
-					$('#gap2').html("<span style='color:red;'>Ctrl</span>");
+					$('#gap1').text("Ctrl").css({
+						"color": "red"
+					});
 				}
 				break;
 			}
+			case 'Digit0':
+			case 'Numpad0': { // 0
+				lots = 10;
+				break;
+			}
+			case 'Digit1':
+			case 'Numpad1': { // 1
+				lots = 1;
+				break;
+			}
+			case 'Digit2':
+			case 'Numpad2': { // 2
+				lots = 2;
+				break;
+			}
+			case 'Digit3':
+			case 'Numpad3': { // 3
+				lots = 3;
+				break;
+			}
+			case 'Digit4':
+			case 'Numpad4': { // 4
+				lots = 4;
+				break;
+			}
+			case 'Digit5':
+			case 'Numpad5': { // 5
+				lots = 5;
+				break;
+			}
+			case 'Digit6':
+			case 'Numpad6': { // 6
+				lots = 6;
+				break;
+			}
+			case 'Digit7':
+			case 'Numpad7': { // 7
+				lots = 7;
+				break;
+			}
+			case 'Digit8':
+			case 'Numpad8': { // 8
+				lots = 8;
+				break;
+			}
+			case 'Digit9':
+			case 'Numpad9': { // 9
+				lots = 9;
+				break;
+			}
+			default: {
+				//console.log(e.code)
+			}
+		}
+		if (lots && Q['props']) {
+			Q['props']['lots'] = lots;
+			$('#gap2').find('span').eq(-1).text(lots);
 		}
 	});
 	$(document).keyup(function(e) { //快捷键:释放按键
-		switch (e.keyCode) {
-			case 17: { //Ctrl 释放控制键
+		switch (e.code) {
+			case 'ControlLeft': //Ctrl 释放控制键（左Ctrl）
+			case 'ControlRight': { //Ctrl 释放控制键（右Ctrl）
 				if (G.ctrlKey == true) {
 					G.ctrlKey = false;
 					buttons(!G.lock);
-					$('#gap2').html('');
+					$('#gap1').html('');
 				}
 				break;
 			}
@@ -1123,7 +1191,7 @@ task[2208] = function(s2c) { //推送订单更新
 			G.Market['position'].push(trdMarket);
 			return Z.Trd_GetPositionList(trdMarket, G.init == false);
 		}
-	}, in_array(o.orderStatus, [2]) ? 800 : 800); //富途持仓接口有延迟
+	}, in_array(o.orderStatus, [2]) ? 500 : 500); //富途持仓接口有延迟
 };
 task[2218] = function(s2c) { //推送新成交,必然伴随着订单更新,即必然调用持仓,即必然会走持仓处的自动挂单
 	if (empty(s2c.orderFill)) {
@@ -1372,49 +1440,52 @@ $(function() {
 			Z.start();
 			if (in_array(O.pmode, [5])) { //复盘需要键盘支持
 				$(document).keydown(function(e) {
+					if (e.shiftKey || e.altKey || e.metaKey) {
+						return;
+					}
 					let day = false;
-					switch (e.keyCode) {
-						case 32: { //space
+					switch (e.code) {
+						case 'Space': { //space
 							break;
 						}
-						case 37: { //left
+						case 'ArrowLeft': { //left
 						}
-						case 65: { //A
+						case 'KeyA': { //A
 							day = 0;
 							break;
 						}
-						case 38: { //up
+						case 'ArrowUp': { //up
 						}
-						case 87: { //W
+						case 'KeyW': { //W
 							day = O.day + 1;
 							break;
 						}
-						case 39: { //right
+						case 'ArrowRight': { //right
 						}
-						case 68: { //D
+						case 'KeyD': { //D
 							day = rand(0, 356);
 							break;
 						}
-						case 40: { //down
+						case 'ArrowDown': { //down
 						}
-						case 83: { //S
+						case 'KeyS': { //S
 							if (O.day) {
 								day = O.day - 1;
 							}
 							break;
 						}
-						case 13: { //Enter
+						case 'Enter': { //Enter
 							day = rand(0, 356);
 							break;
 						}
-						case 86: { //V
+						case 'KeyV': { //V
 							inverted(kvs.inverted ? false : true, true);
 							break;
 						}
-						case 98: //小键盘区的2
-						case 104: { //小键盘区的8
+						case 'PageUp': //page up
+						case 'PageDown': { //page down
 							let list = [];
-							let next = in_array(e.keyCode, [98]) ? +1 : -1; //向下浏览
+							let next = in_array(e.code, ['PageUp']) ? +1 : -1; //向下浏览:股票大全上一支下一支
 							window.db.table("z-stocks").each(function(a) {
 								list.push({
 									code: a['code'],
@@ -1430,7 +1501,7 @@ $(function() {
 									}
 									list[k + next] && window.open(G.path + '?' + http_build_query(array_merge($_GET, {
 										'code': list[k + next]['code']
-									})), '_self')
+									})), '_self');
 
 									break;
 								}
@@ -1438,7 +1509,7 @@ $(function() {
 							break;
 						}
 						default: {
-							//console.log(e.keyCode)
+							//console.log(e.code)
 						}
 					}
 					is_int(day) && window.open(G.path + '?' + http_build_query(array_merge($_GET, {
