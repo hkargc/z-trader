@@ -381,7 +381,7 @@ function ZHub() {
 			});
 		});
 		let c2s = {};
-		if (securityList.length) {
+		if (count(securityList)) {
 			c2s = {
 				'securityList': securityList
 			};
@@ -442,7 +442,7 @@ function ZHub() {
 		if (nextReqKey) {
 			c2s['nextReqKey'] = nextReqKey;
 		}
-		if (is_array(needKLFieldsFlag) && needKLFieldsFlag.length) {
+		if (is_array(needKLFieldsFlag) && count(needKLFieldsFlag)) {
 			c2s['needKLFieldsFlag'] = needKLFieldsFlag;
 		}
 		if (extendedTime) {
@@ -749,10 +749,10 @@ function ZHub() {
 				'endTime': date('Y-m-d H:i:s', endTime)
 			}
 		};
-		if (codeList.length) {
+		if (count(codeList)) {
 			c2s['filterConditions']['codeList'] = codeList;
 		}
-		if (idList.length) {
+		if (count(idList)) {
 			c2s['filterConditions']['idList'] = idList;
 		}
 		return _this.send(2222, c2s, 1);

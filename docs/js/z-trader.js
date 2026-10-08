@@ -117,7 +117,7 @@ task[3219] = function(s2c) { //交易日期
 		time = strtotime(O.day) * 1;
 	}
 	const zero = mktime(0, 0, 0); //今天0点
-	for (let i = s2c.tradeDateList.length - 1; i >= 0; i--) {
+	for (let i = count(s2c.tradeDateList) - 1; i >= 0; i--) {
 		let timestamp = s2c.tradeDateList[i]['timestamp'] * 1;
 		if ((timestamp == zero) && s2c.tradeDateList[i + 1] && s2c.tradeDateList[i + 2]) { //判断恒指期货结算日
 			O.ISTRADE = true;
@@ -135,7 +135,7 @@ task[3219] = function(s2c) { //交易日期
 		}
 		if (time >= timestamp) {
 			return window.open(G.path + '?' + http_build_query(array_merge($_GET, {
-				'day': trades.length
+				'day': count(trades)
 			})), '_self');
 		}
 		trades.push(timestamp);
@@ -157,7 +157,7 @@ task[3219] = function(s2c) { //交易日期
 	let dn = ceil((prefs.cpoints + 60) * pn / kn); //多取60根以便计算均线
 
 	if (O.klType == 2) { //日线拿N年
-		dn = min(trades.length - 1, 250 * 5) - O.day;
+		dn = min(count(trades) - 1, 250 * 5) - O.day;
 	}
 
 	Z.Qot_RequestHistoryKL(O.code, O.klType, trades[O.day + dn], O.date + 33 * 60 * 60, 0, '', [], 1, 0); //第三步:获取K线
@@ -319,7 +319,7 @@ task[3210] = function(s2c) { //获取牛熊证响应
 		s2c['warrantDataList'] = [];
 		s2c['lastPage'] = true;
 	}
-	G.nx += s2c['warrantDataList'].length;
+	G.nx += count(s2c['warrantDataList']);
 	for (let i in s2c['warrantDataList']) {
 		let a = s2c['warrantDataList'][i];
 		if (in_array(a['status'], [1]) == false) {
@@ -838,7 +838,7 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 			price = (trdSide == 2) ? gear_up(price, array_first(Q['props']["fill"]), p.code) : gear_down(price, array_first(Q['props']["fill"]), p.code);
 		}
 	}
-	if (codes.length) { //订阅实时报价+摆盘+逐笔
+	if (count(codes)) { //订阅实时报价+摆盘+逐笔
 		Z.Qot_Sub(codes, [1, 2, 4], true, true, [1], true);
 	}
 	for (let i in TrdMarkets) { //逐市场查询持仓
@@ -1295,7 +1295,7 @@ task[1003] = function(s2c) { //系统通知
 				'display': 'block'
 			});
 		}
-		for (let i = data['news'].length - 1; i >= 0; i--) {
+		for (let i = count(data['news']) - 1; i >= 0; i--) {
 			let a = data['news'][i];
 			let z = $('#trd_news').find("tr[class='news" + a['id'] + "']").length ? true : false; //之前有此条
 			let s = "<tr style='color:" + (z || f ? 'black' : 'red') + ";' class='news" + a['id'] + "'>";
@@ -1497,7 +1497,7 @@ $(function() {
 								list.sort(function(a, b) { //从大到小排列
 									return b.sort - a.sort;
 								});
-								for (let k = 0; k < list.length; k++) {
+								for (let k = 0; k < count(list); k++) {
 									if (list[k]['code'] != Q.code) {
 										continue;
 									}

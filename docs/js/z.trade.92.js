@@ -195,7 +195,7 @@ function do_stock(code) {
 					}
 				}
 			}
-			if (in_array(a['orderStatus'], [5, 10]) && tickers.length) { //查逐笔
+			if (in_array(a['orderStatus'], [5, 10]) && count(tickers)) { //查逐笔
 				for (let k in tickers) {
 					let t = tickers[k];
 					if (t['timestamp'] < a['updateTimestamp']) { //比订单还早的数据
@@ -301,7 +301,7 @@ function do_stock(code) {
 					}
 				}
 			}
-			if (in_array(a['orderStatus'], [5, 10]) && tickers.length) { //查逐笔
+			if (in_array(a['orderStatus'], [5, 10]) && count(tickers)) { //查逐笔
 				for (let k in tickers) {
 					let t = tickers[k];
 					if (t['timestamp'] < a['updateTimestamp']) { //比订单还早的数据

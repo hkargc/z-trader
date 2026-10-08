@@ -663,7 +663,7 @@ _this._open = function() {
 					symbols.push(b);
 
 				}
-				if (in_array(proto, [3202], true) && symbols.length) {
+				if (in_array(proto, [3202], true) && count(symbols)) {
 					_this.db.table("z-symbols").bulkPut(symbols);
 
 					_this.post({
@@ -674,7 +674,7 @@ _this._open = function() {
 						}
 					});
 				}
-				if (in_array(proto, [3218], true) && futureInfoList.length) {
+				if (in_array(proto, [3218], true) && count(futureInfoList)) {
 					_this.post({
 						proto: proto
 					}, {
@@ -805,12 +805,12 @@ _this.task[3202] = function(m) {
 			}
 			symbols.push(a);
 		}).then(function() {
-			symbols.length && _this.post(m, {
+			count(symbols) && _this.post(m, {
 				s2c: {
 					symbols: symbols
 				}
 			});
-			symbols.length || _this.db.table("z-symbols").clear().then(function() {
+			count(symbols) || _this.db.table("z-symbols").clear().then(function() {
 				ins_query(m.proto, { //这里发出一个GraphQL查询包,在message里面响应
 					"class": ["FUTURE", "CONT"],
 					"exchange_id": ["CFFEX", "SHFE", "DCE", "CZCE", "INE", "GFEX", "KQ", "KQD"],

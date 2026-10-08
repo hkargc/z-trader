@@ -565,7 +565,7 @@ function gear_up(p, step, code) {
 		if (p < Gear[0][0]) {
 			break;
 		}
-		for (let i = 0; i < Gear.length; i++) {
+		for (let i = 0; i < count(Gear); i++) {
 			let v = Gear[i];
 			if ((p >= v[0]) && (p < v[1])) {
 				let q = ceil(p / v[2]) * v[2]; //计算到最近的一个合法档位
@@ -621,7 +621,7 @@ function gear_down(p, step, code) {
 		if (p < Gear[0][0]) {
 			break;
 		}
-		for (let i = 0; i < Gear.length; i++) {
+		for (let i = 0; i < count(Gear); i++) {
 			let v = Gear[i];
 			if ((p >= v[0]) && (p < v[1])) {
 				let q = floor(p / v[2]) * v[2];
@@ -1596,8 +1596,8 @@ function selectNextAnnotation(direction) {
 	let next = true; //是否继续下一根
 	let selected = G.ctrl.getSelectedAnnotation();
 	let list = getAnnotations();
-	for (let step = 0; step < list.length; step++) {
-		let i = (direction > 0) ? step : (list.length - 1 - step);
+	for (let step = 0; step < count(list); step++) {
+		let i = (direction > 0) ? step : (count(list) - 1 - step);
 		let d = list[i];
 		let annotation = G.ctrl.getAnnotationAt(d[0]);
 		if (empty(annotation)) {
@@ -2480,14 +2480,14 @@ function pivoted(f) {
 			}
 			let pivot = 0;
 			let fill = 'red';
-			if (pArr.length >= 20) {
+			if (count(pArr) >= 20) {
 				pArr = pArr.slice(-20);
 				tInt = pArr[0][0];
 				let avg = 0;
 				for (let i in pArr) {
 					avg += pArr[i][1];
 				}
-				vArr[t] = avg / pArr.length;
+				vArr[t] = avg / count(pArr);
 				if (vArr[pArr[18][0]]) { //前面那一根的移动平均值
 					lInt = pArr[18][0];
 					pivot = vArr[t] - vArr[pArr[18][0]];
