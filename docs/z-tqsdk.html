@@ -22,6 +22,7 @@
 		<script>window.O = {};</script>
 		<script>
 			document.write('\x3Cscript src="./js/config.js?_=' + Math.random() + '">\x3C/script>');
+			document.write('\x3Cscript src="./js/config.props.js?_=' + Math.random() + '">\x3C/script>');
 			document.write('\x3Cscript src="./js/common.js?_=' + Math.random() + '">\x3C/script>');
 			document.write('\x3Cscript src="./js/z.hub.js?_=' + Math.random() + '">\x3C/script>');
 			document.write('\x3Cscript src="./js/z-trader.js?_=' + Math.random() + '">\x3C/script>');
@@ -62,13 +63,13 @@
 						<a href="{{ EXCG[exchange_id]|last }}" style="float:none;font-size:inherit;color:red;" target="_blank">[{{ EXCG[exchange_id]|first }}]</a>
 						</th>
 					</tr>
-					<tr><th>代码</th><th>名称</th><th>保证金</th><th>开仓</th></tr>
+					<tr><th>代码</th><th>名称</th><th>保证金</th><th>[开+平今]</th></tr>
 					{% for instrument_id, a in nodes %}
 					<tr>
 						<td class="clipboard" data-clipboard-text="{{ a['instrument_id'] }}">{{ a['instrument_id'] }}</td>
 						<td><a {% if a['CONT'] %}style="color:red;"{% endif %} href="javascript:go('{{ a['instrument_id'] }}')">{{ a['instrument_name'] }}</a></td>
 						<td>{{ a['margin'] }}</td>
-						<td>{{ a['commission']|number_format(2) }}</td>
+						<td>{{ a['commission'][2]|number_format(2) }}</td>
 					</tr>
 					{% endfor %}
 				</table>
@@ -127,7 +128,8 @@
 						continue;
 					}
 					if((a["class"] == "FUTURE") && (a["exchange_id"] != "KQD")){ //可交易期货:活跃期货
-						if(in_array(a["product_id"], ['JR', 'LR', 'PM', 'RI', 'WH', 'ZC', 'RS', 'wr', 'bb', 'fb', 'rr'])){
+						let b = Z.stock(a["instrument_id"], {part: true});
+						if(b['props']['sign'] == 2){ //不可交易标的
 							continue;
 						}
 						if(empty(list[a["exchange_id"]])){
@@ -137,6 +139,11 @@
 							list[a["exchange_id"]][a["instrument_id"]] = {};
 						}
 						a['CONT'] = false;
+						
+						a["sign"] = b["props"]["sign"] * 1; //
+						a["commission"] = fees(a['settlement_price'] * a['volume_multiple'], a["instrument_id"]);
+						a["margin"] = (b['props']['marg'] * a['settlement_price'] * a['volume_multiple'] / 100).toFixed(0);
+						
 						list[a["exchange_id"]][a["instrument_id"]] = a;
 					}
 					if((a["class"] == "CONT") && (a["exchange_id"] == "KQ")){ //期货主连:80多支

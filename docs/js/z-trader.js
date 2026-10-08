@@ -193,6 +193,8 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 		high = max(high, a['highPrice']);
 		window.klines.push(k);
 	}
+	Q['props'] = Z.props(Q); //已经有完整信息,对配置进行修正
+	
 	empty(Q['minVar']) && Object.assign(Q, { //每档的跨度,港股正股根据价格计算
 		minVar: (gear_up(Q['curPrice'], 1, Q['code']) - Q['curPrice']).toFixed(3) * 1
 	});

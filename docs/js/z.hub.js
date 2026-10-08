@@ -976,7 +976,7 @@ function ZHub() {
 				code: code,
 				trdEnv: o.trdEnv || _this.trdEnv
 			});
-			_o['props'] = _this.props(_o['main_code']); //根据code计算出来的main_code是明确的
+			_o['props'] = _this.props(_o); //根据code计算出来的main_code是明确的
 			_this.stocks[code] = _o;
 		};
 		if (_this.stocks[code]['qotType'] == _this.stocks[code]['secType']) { //已经是完整的信息
@@ -1232,7 +1232,7 @@ function ZHub() {
 			}
 			return o;
 		}
-		m = preg_match_all(/^((KQ\.m@){0,1}(CFFEX|SHFE|DCE|CZCE|INE|SSE|SZSE|GFEX){1}\.([a-zA-Z]+)(\d+){0,1})$/, o.code, 'PREG_SET_ORDER');
+		m = preg_match_all(/^((KQ\.m@){0,1}(CFFEX|SHFE|DCE|CZCE|INE|SSE|SZSE|GFEX){1}\.([a-zA-Z]+)(\d+){0,1}(F?))$/, o.code, 'PREG_SET_ORDER');
 		if (count(m) && count(m[0])) { //天勤支持的大陆期货主连或实际合约,形如: DCE.eb2602 KQ.m@DCE.eb
 			o.secType = 10; //期货类型
 			o.main_code = `KQ.m@${m[0][3]}.${m[0][4]}`; //天勤的主连命名
@@ -1280,11 +1280,11 @@ function ZHub() {
 	};
 	/**
 	 * 返回完整标的个性化设置
-	 * @param {type} main_code
+	 * @param {type} o
 	 * @returns {Number}
 	 */
-	this.props = function(main_code) {
-		let prop = Object.assign({}, config.props[main_code]);
+	this.props = function(o) {
+		let prop = array_replace_recursive(config.props[o['main_code']], config.props[o['origin_code']]);
 		prop.lots = intval(prop.lots);
 		if (prop.lots <= 0) { //每订单多少手
 			prop.lots = 1;
