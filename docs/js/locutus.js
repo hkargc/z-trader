@@ -10442,7 +10442,7 @@ const $_COOKIE = (function() {
 				str += 'Array\n' + basePad + '(\n';
 				for (const key in objectValue) {
 					const value = objectValue[key];
-					if (Array.isArray(value)) {
+					if (isObjectLike(value)) {
 						str += thickPad;
 						str += '[';
 						str += key;
