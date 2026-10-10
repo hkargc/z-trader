@@ -30,6 +30,7 @@ $GLOBALS.G = {
 	booktime: 0, //用于摆盘刷新频率
 	tickertime: 0, //用于逐笔刷新频率
 	activetime: 0, //页面最后点击时间
+	candletime: 0, //鼠标指向的K线所在的时间:用于响应K线双击事件
 	preloader: null, //加载层
 	nx: 0, //牛熊证数量
 	id: null, //最后一次选中的订单划线ID
@@ -1893,7 +1894,16 @@ function kchart(klines) {
 	series.fallingStroke("green");
 	series.fallingFill("green");
 	let tooltip = series.tooltip();
-	tooltip.format("开盘:{%open}\n最高:{%high}\n最低:{%low}\n收盘:{%close}\n涨跌额:{%change}\n涨跌幅:{%changeRate}");
+	//tooltip.format("开盘:{%open}\n最高:{%high}\n最低:{%low}\n收盘:{%close}\n涨跌额:{%change}\n涨跌幅:{%changeRate}");
+	tooltip.format(function(e) {
+		G.candletime = e.getData('x') / 1000;
+		return "开盘:" + e.getData('open') + "\n" +
+			"最高:" + e.getData('high') + "\n" +
+			"最低:" + e.getData('low') + "\n" +
+			"收盘:" + e.getData('close') + "\n" +
+			"涨跌额:" + e.getData('change') + "\n" +
+			"涨跌幅:" + e.getData('changeRate');
+	});
 	let smaMapping = window.table.mapAs();
 	smaMapping.addField('x', 0);
 	smaMapping.addField('value', 4);
@@ -1967,6 +1977,21 @@ function kchart(klines) {
 			chart.plot(0).yScale().maximum(calcMax);
 		});
 	});
+	chart.plot(0).listen('dblclick', function(e) { //双击打开该日线对应的一分K
+		if (!in_array(O.klType, [2])) {
+			return true;
+		}
+		if (!in_array(O.pmode, [5])) {
+			return true;
+		}
+		if (!preg_match(/^\d{10}$/, G.candletime)) {
+			return true;
+		}
+		window.open(G.path + '?' + http_build_query(array_merge($_GET, {
+			'klType': 1,
+			'day': G.candletime
+		})), '_blank');
+	})
 	G.ctrl = chart.plot(0).annotations(); //画线控制台
 	let key = implode(":", ["annotations", Q['main_code'], O.date]);
 	let annotations = array_values(kvs[key] ?? []);
