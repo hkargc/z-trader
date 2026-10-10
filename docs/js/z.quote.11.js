@@ -1180,7 +1180,23 @@ _this.task[3103] = function(m) {
 			});
 		}).then(function([status, body]) {
 			if (status != 200) {
-				return console.log(body);
+				return _this.post({ //错误消息
+					proto: 1003,
+					serialNo: 0
+				}, {
+					s2c: {
+						type: -2,
+						event: {
+							eventType: -2,
+							desc: json_encode({
+								"desc": body,
+								"news": [],
+								"gaps": [],
+								"events": []
+							})
+						}
+					}
+				});
 			}
 			let klList = [];
 			Papa.parse(body, {
