@@ -1,0 +1,16 @@
+# 禁用所有文件的换行符自动转换，完全保持仓库原样
+* -text
+
+docs/** linguist-documentation=false
+docs/** linguist-detectable=true
+
+*.js linguist-language=JavaScript
+*.html linguist-language=HTML
+*.php linguist-language=PHP
+*.twig linguist-language=PHP
+
+*.bat linguist-vendored=true
+*.css linguist-vendored=true
+*.go linguist-vendored=true
+go.mod linguist-vendored=true
+go.sum linguist-vendored=true
