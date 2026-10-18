@@ -1085,13 +1085,13 @@ _this.task[2202] = function(m) {
 			offset = "CLOSETODAY";
 		}
 	}
-	if (_this.STAT[code] && (_this.STAT[code][0] >= 2500)) { //超过4000要收申报费
+	if (_this.STAT[code] && (_this.STAT[code][0] >= 3000)) { //超过4000要收申报费
 		return _this.post(m, {
 			'retType': -1,
 			'retMsg': '订单数超出!'
 		});
 	}
-	if (_this.STAT[code] && (_this.STAT[code][3] >= 250)) { //撤单超过500触发异常交易监管
+	if (_this.STAT[code] && (_this.STAT[code][3] >= 400)) { //撤单超过500触发异常交易监管
 		return _this.post(m, {
 			'retType': -1,
 			'retMsg': '撤单数超出!!'

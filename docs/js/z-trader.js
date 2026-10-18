@@ -234,18 +234,12 @@ task[3103] = function(s2c) { //历史K线,这里用的是O.code,实时K线用ori
 	let q = format(Q['curPrice'] - Q['lastClosePrice'], 3);
 	if (in_array(O.pmode, [4])) { //简易图模式:只需要初始化主图和订阅本尊实时K线
 		$('#tips').html((q > 0 ? '+' : '') + q);
-		if (kvs.inverted) { //反转
-			inverted(1);
-		}
 		return preloader(false); //解屏
 	}
 	Z.Trd_GetAccList(); //第四步:获取交易账号[交易和查询历史成交都需要]
 	if (in_array(O.pmode, [5])) { //复盘模式:逐日查看往期K线图,往期的不需要实时,但需要交易账号查询历史成交以便打点
 		if (kvs.pivoted) { //是否显示均差图
 			pivoted(1);
-		}
-		if (kvs.inverted) { //反转
-			inverted(1);
 		}
 		return preloader(false); //解屏,查询历史成交限频后不影响K线展示
 	}
@@ -929,7 +923,7 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 			}
 			case 'KeyV': { //V
 				if (G.ctrlKey == false) {
-					inverted(kvs.inverted ? false : true, true);
+					inverted(!kvs.inverted, true);
 				}
 				break;
 			}
@@ -1192,9 +1186,6 @@ task[2102] = function(s2c) { //查询持仓-响应[每次订单更新都会来�
 			});
 		}
 	});
-	if (kvs.inverted) { //反转
-		inverted(1);
-	}
 };
 task[2205] = function(s2c) { //修改订单-响应(改价+改量/失效/生效/撤单)(30秒20次,如果修改所有,orderIDEx为空)
 };
@@ -1555,7 +1546,7 @@ $(function() {
 						break;
 					}
 					case 'KeyV': { //V
-						inverted(kvs.inverted ? false : true, true);
+						inverted(!kvs.inverted, true);
 						break;
 					}
 					case 'PageUp': //page up

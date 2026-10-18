@@ -33,6 +33,7 @@ $GLOBALS.G = {
 	candletime: 0, //鼠标指向的K线所在的时间:用于响应K线双击事件
 	preloader: null, //加载层
 	nx: 0, //牛熊证数量
+	bc: null, //BroadcastChannel
 	id: null, //最后一次选中的订单划线ID
 	alert: 0, //页面出现过的alert数量,超额则重载页面
 	init: false, //是否完成了初始化
@@ -2143,6 +2144,16 @@ function kchart(klines) {
 	chart.plot(1).yScale().minimum(lots * 1000 * 0);
 	chart.plot(1).yScale().maximum(lots * 1000 * 1);
 	chart.plot(1).yScale().ticks().interval(lots * 1000 / 2);
+
+	G.bc = new BroadcastChannel('z-trader'); //跨标签数据
+	G.bc.addEventListener('message', function(e) {
+		if (e.data.key == 'inverted') {
+			inverted(e.data.value, false);
+		}
+	});
+	if (kvs.inverted) { //反转
+		inverted(true, false);
+	}
 	document.addEventListener("wheel", function(e) { //鼠标滚轮控制主图的上下滚动
 		e.preventDefault();
 		if (window.chart && window.scroller) {
@@ -2302,7 +2313,10 @@ function inverted(f, trigger) {
 		let rows = $('#trd_order').find('tr:not(:first)');
 		$('#trd_order').find('tr:first').after(rows.get().reverse());
 		$(":input[name='inverted']").prop('checked', kvs.inverted);
-		trigger && (top != self) && window.top.inverted(kvs.inverted); //触发上级窗口
+		trigger && G.bc && G.bc.postMessage({
+			key: 'inverted',
+			value: kvs.inverted
+		});
 		trigger && db.table("z-kvs").put({
 			type: 1,
 			key: 'inverted',
