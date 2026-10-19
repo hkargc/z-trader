@@ -24,7 +24,7 @@ config.quote[11] = { //天勤量化
 	shinnytech_username: '**username**', //天勤系统登录账户
 	shinnytech_password: '**password**', //天勤系统登录密码
 	
-	broker_bid: '快期模拟', //期货公司,比如: '快期模拟','H宏源期货','H徽商期货','Y银河期货','simnow'...支持的期货公司列表 https://www.shinnytech.com/blog/tq-support-broker/
+	broker_bid: '快期模拟', //期货公司,比如: '快期模拟','H宏源期货','H徽商期货','Y银河期货','simnow'...支持的期货公司列表 https://www.shinnytech.com/articles/reference/tqsdk-brokers
 	broker_account_id: '**username**', //期货公司的交易账户[非登录用户名或手机号,可能是资金账号,一般是系统生成的一串数字?]
 	broker_account_password: '**password**',
 	
@@ -32,7 +32,7 @@ config.quote[11] = { //天勤量化
 	broker_account_id: '**number**', //simnow的这个值是一串数字,登录系统->"投资者代码"
 	broker_account_password: '**password**',
 	
-	broker_bid: 'H宏源期货', //期货公司,比如: '快期模拟','H宏源期货','H徽商期货','Y银河期货','simnow'...支持的期货公司列表 https://www.shinnytech.com/blog/tq-support-broker/
+	broker_bid: 'H宏源期货', //期货公司,比如: '快期模拟','H宏源期货','H徽商期货','Y银河期货','simnow'...支持的期货公司列表 https://www.shinnytech.com/articles/reference/tqsdk-brokers
 	broker_account_id: '**number**', //一串数字,宏源期货的系统中称为: "资金帐号" 或 "交易账号"
 	broker_account_password: '**password**' //交易密码
 };
