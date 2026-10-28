@@ -239,6 +239,16 @@ var httpClient = &http.Client{
 
 // 【主路由处理器】
 func mainHandler(w http.ResponseWriter, r *http.Request) {
+	
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, User-Agent")
+
+    // 0. 拦截浏览器的预检请求（OPTIONS），直接返回 200
+    if r.Method == http.MethodOptions {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
 
 	// 1. 如果请求包含 Upgrade: websocket，则进入 WebSocket 代理逻辑
 	if strings.ToLower(r.Header.Get("Upgrade")) == "websocket" {
