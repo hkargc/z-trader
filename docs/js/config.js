@@ -36,10 +36,19 @@ config.quote[11] = { //天勤量化
 	broker_account_id: '**number**', //一串数字,宏源期货的系统中称为: "资金帐号" 或 "交易账号"
 	broker_account_password: '**password**' //交易密码
 };
+config.quote[21] = { //vn.py
+	webproxy: 'http://127.0.0.1:10086/', //解决跨域问题
+	
+	username: 'vnpy', //Web服务 界面上的用户名
+	password: 'vnpy' //Web服务 界面上的密码
+};
 config.trade[1] = Object.assign(config.quote[1], { //富途websocket配置
 	
 });
 config.trade[11] = Object.assign(config.quote[11], {
+	
+});
+config.trade[21] = Object.assign(config.quote[21], {
 	
 });
 config.props['KQ.m@CFFEX.IC'] = { //中证主连
@@ -760,7 +769,7 @@ config.props['KQ.m@DCE.eb'] = { //苯乙烯主连
 	12: [20, 100], //十分K
 	13: [20, 100], //两小时K
 	14: [20, 100], //三小时K
-	15: [20, 100] //四小时K
+	15: [200, 1000] //四小时K
 };
 config.props['KQ.m@DCE.eg'] = { //甘醇主连
 	sign: 0, //标识:0常规标的;1需要单独申请交易权限;2无法交易的标的

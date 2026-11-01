@@ -300,7 +300,7 @@ function alert(message, options) {
 			if (options.reload) {
 				return window.location.reload();
 			}
-			if (typeof(options.url) === 'string' && options.url.length) {
+			if (is_string(options.url) && strlen(options.url)) {
 				return window.location.href = options.url;
 			}
 		}
@@ -2199,6 +2199,389 @@ function kchart(klines) {
 		passive: false,
 		capture: false
 	});
+	$(document).contextmenu(function(e) { //禁止右键
+		e.preventDefault();
+	});
+	$(document).on("click", function() {
+		//window.top.focus();
+	});
+	$(document).keydown(function(e) { //快捷键:触发按键
+		if (e.shiftKey || e.altKey || e.metaKey) {
+			return;
+		}
+		if ($(document.activeElement).is('input, textarea')) {
+			return;
+		}
+		if (in_array(e.code, ['F5', 'F11', 'F12', 'Escape'])) {
+			return;
+		}
+		e.preventDefault(); //禁止其他健防误碰
+
+		let day = false;
+		switch (e.code) {
+			case 'Space': { //space 空格键
+				if ($('#btn8').is(':visible:enabled')) { //使订单失效
+					$('#btn8').click();
+				}
+				if ($('#btn9').is(':visible:enabled')) { //使订单生效
+					$('#btn9').click();
+				}
+				break;
+			}
+			case 'KeyA': { //A
+				break;
+			}
+			case 'KeyD': { //D
+				break;
+			}
+			case 'KeyW': { //W
+				if ($("#opt1").is(':visible')) { //交易面板: 选中上一个订单
+					selectNextAnnotation(kvs.inverted ? -1 : 1);
+				}
+				break;
+			}
+			case 'KeyS': { //S
+				if ($("#opt2").is(':visible')) { //交易面板: 选中下一个订单
+					selectNextAnnotation(kvs.inverted ? 1 : -1);
+				}
+				break;
+			}
+			case 'ArrowUp': { //up 方向上键
+				day = O.day + 1;
+				if ($('#btn4').is(':visible:enabled')) { //使订单上移
+					$('#btn4').click();
+				}
+				break;
+			}
+			case 'ArrowLeft': { //left 方向左键
+				day = 0;
+				if (G.ctrlKey) { //强出
+					$('#btn6:visible').click();
+				}
+				if (!G.ctrlKey) { //平出
+					$('#btn10:visible').click();
+				}
+				break;
+			}
+			case 'ArrowRight': { //right 方向右键
+				day = rand(0, 365); //一年中随机
+				if (G.ctrlKey) { //强出
+					$('#btn6:visible').click();
+				}
+				if (!G.ctrlKey) { //平出
+					$('#btn10:visible').click();
+				}
+				break;
+			}
+			case 'ArrowDown': { //down 方向下键
+				day = max(0, O.day - 1);
+				if ($('#btn5').is(':visible:enabled')) { //使订单下移
+					$('#btn5').click();
+				}
+				break;
+			}
+			case 'Enter': { //Enter
+				break;
+			}
+			case 'KeyL': { //L
+				if ($('#pwd').length === 0) { //锁屏
+					preloader(true);
+				}
+				break;
+			}
+			case 'KeyV': { //V
+				if (!G.ctrlKey) {
+					inverted(!kvs.inverted, true);
+				}
+				break;
+			}
+			case 'PageUp': //page up
+			case 'PageDown': { //page down
+				if ($("#buttons").is(':hidden')) { //非复盘模式
+					break;
+				}
+				let list = [];
+				let next = in_array(e.code, ['PageUp']) ? +1 : -1; //向下浏览:股票大全上一支下一支
+				window.db.table("z-stocks").each(function(a) {
+					list.push({
+						code: a['code'],
+						sort: a['sort'] || 0
+					});
+				}).then(function() {
+					list.sort(function(a, b) { //从大到小排列
+						return b.sort - a.sort;
+					});
+					for (let k = 0; k < count(list); k++) {
+						if (list[k]['code'] != Q.code) {
+							continue;
+						}
+						list[k + next] && window.open(G.path + '?' + http_build_query(array_merge($_GET, {
+							'code': list[k + next]['code']
+						})), '_self');
+						break;
+					}
+				});
+				break;
+			}
+			case 'ControlLeft': //Ctrl 按下控制键（左Ctrl）
+			case 'ControlRight': { //Ctrl 按下控制键（右Ctrl）
+				if (empty(G.ctrlKey) && $('#gap1').is(':visible')) {
+					G.ctrlKey = true;
+					buttons(!G.lock);
+					$('#gap1').text("Ctrl").css({
+						"color": "red"
+					});
+				}
+				break;
+			}
+			case 'Digit0':
+			case 'Numpad0': { // 0
+				G.lots = 10;
+				break;
+			}
+			case 'Digit1':
+			case 'Numpad1': { // 1
+				G.lots = 1;
+				break;
+			}
+			case 'Digit2':
+			case 'Numpad2': { // 2
+				G.lots = 2;
+				break;
+			}
+			case 'Digit3':
+			case 'Numpad3': { // 3
+				G.lots = 3;
+				break;
+			}
+			case 'Digit4':
+			case 'Numpad4': { // 4
+				G.lots = 4;
+				break;
+			}
+			case 'Digit5':
+			case 'Numpad5': { // 5
+				G.lots = 5;
+				break;
+			}
+			case 'Digit6':
+			case 'Numpad6': { // 6
+				G.lots = 6;
+				break;
+			}
+			case 'Digit7':
+			case 'Numpad7': { // 7
+				G.lots = 7;
+				break;
+			}
+			case 'Digit8':
+			case 'Numpad8': { // 8
+				G.lots = 8;
+				break;
+			}
+			case 'Digit9':
+			case 'Numpad9': { // 9
+				G.lots = 9;
+				break;
+			}
+			default: {
+				//console.log(e.code)
+			}
+		}
+		if (G.lots && $('#gap2').is(':visible')) {
+			$('#gap2').find('span').eq(-1).text(G.lots || Q['props']['lots']);
+		}
+		is_int(day) && $("#buttons").is(':visible') && window.open(G.path + '?' + http_build_query(array_merge($_GET, {
+			'day': day
+		})), '_self');
+	});
+	$(document).keyup(function(e) { //快捷键:释放按键
+		if (e.shiftKey || e.altKey || e.metaKey) {
+			return;
+		}
+		if ($(document.activeElement).is('input, textarea')) {
+			return;
+		}
+
+		switch (e.code) {
+			case 'ControlLeft': //Ctrl 释放控制键（左Ctrl）
+			case 'ControlRight': { //Ctrl 释放控制键（右Ctrl）
+				if (G.ctrlKey && $('#gap1').is(':visible')) {
+					G.ctrlKey = false;
+					buttons(!G.lock);
+					$('#gap1').empty();
+				}
+				break;
+			}
+			case 'Digit0':
+			case 'Numpad0': { // 0
+				G.lots = 10;
+				break;
+			}
+			case 'Digit1':
+			case 'Numpad1': { // 1
+				G.lots = 1;
+				break;
+			}
+			case 'Digit2':
+			case 'Numpad2': { // 2
+				G.lots = 2;
+				break;
+			}
+			case 'Digit3':
+			case 'Numpad3': { // 3
+				G.lots = 3;
+				break;
+			}
+			case 'Digit4':
+			case 'Numpad4': { // 4
+				G.lots = 4;
+				break;
+			}
+			case 'Digit5':
+			case 'Numpad5': { // 5
+				G.lots = 5;
+				break;
+			}
+			case 'Digit6':
+			case 'Numpad6': { // 6
+				G.lots = 6;
+				break;
+			}
+			case 'Digit7':
+			case 'Numpad7': { // 7
+				G.lots = 7;
+				break;
+			}
+			case 'Digit8':
+			case 'Numpad8': { // 8
+				G.lots = 8;
+				break;
+			}
+			case 'Digit9':
+			case 'Numpad9': { // 9
+				G.lots = 9;
+				break;
+			}
+			default: {
+				//console.log(e.code)
+			}
+		}
+		if (G.lots && $('#gap2').is(':visible')) {
+			G.lots = 0; //重置
+			e.preventDefault();
+			$('#gap2').find('span').eq(-1).text(G.lots || Q['props']['lots']);
+		}
+	});
+	$(":input[name='locker']").click(function(e) { //锁屏复选框
+		e.stopPropagation();
+		$(this).blur();
+		$(this).prop('checked', false);
+		preloader(true);
+	});
+	$(document).click(function(e) { //超时锁屏,防止误碰
+		G.activetime = window.performance.now();
+		if (preloader()) {
+			preloader(false);
+
+			const themeColor = '#F44336';
+
+			const contentHtml = `
+			<div style="padding: 10px 5px;">
+				<div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;">
+					<span style="color:#2c3e50; font-size:15px; font-weight:500;">请输入解锁密码:</span>
+					<input type="text" class="pwd" required="required" autocomplete="new-password" id="pwd" 
+						style="width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 14px; outline: none; transition: border-color 0.2s; -webkit-text-security: disc; text-security: disc;" />
+				</div>
+			</div>`;
+
+			$('<div></div>').html(contentHtml).dialog({
+				title: '系统消息',
+				modal: true,
+				width: 420,
+				resizable: false,
+				draggable: false,
+				closeOnEscape: false,
+				show: {
+					effect: "fade",
+					duration: 200
+				},
+				buttons: [{
+						text: "确定",
+						class: "btn-trading-confirm",
+						click: function() {
+							let $dlg = $(this);
+							let $pwd = $dlg.find('.pwd');
+							if ($pwd.val() === prefs.pwd) {
+								preloader(false);
+								$dlg.dialog("close");
+							} else {
+								$pwd.val('').css('border-color', themeColor).focus();
+							}
+						}
+					},
+					{
+						text: "取消",
+						class: "btn-trading-cancel",
+						click: function() {
+							$(this).dialog("close");
+						}
+					}
+				],
+				open: function() {
+					const $dlg = $(this);
+					const $pwdInput = $dlg.find('.pwd');
+					setTimeout(() => {
+						$pwdInput.focus();
+					}, 50);
+					$pwdInput.on('focus', function() {
+						$(this).css('border-color', themeColor);
+					});
+					$pwdInput.on('click', e => e.stopPropagation());
+
+					const $wrapper = $dlg.parent();
+					$wrapper.css({
+						"border": "none",
+						"border-radius": "12px",
+						"box-shadow": "0 20px 40px rgba(0,0,0,0.15)"
+					});
+					$wrapper.find('.ui-dialog-titlebar').css({
+						"background": "#fff",
+						"border": "none",
+						"font-weight": "bold"
+					});
+					$wrapper.find('.ui-dialog-buttonpane').css({
+						"border": "none",
+						"text-align": "right",
+						"padding-right": "20px"
+					});
+					$wrapper.find('button.btn-trading-confirm').attr('class', '').css({
+						"background": themeColor,
+						"color": "#fff",
+						"border": "none",
+						"padding": "6px 20px",
+						"border-radius": "4px",
+						"cursor": "pointer"
+					});
+					$wrapper.find('button.btn-trading-cancel').attr('class', '').css({
+						"background": "#fff",
+						"color": "#606266",
+						"border": "1px solid #dcdfe6",
+						"padding": "5px 20px",
+						"border-radius": "4px",
+						"cursor": "pointer",
+						"margin-right": "10px"
+					});
+				},
+				close: function() {
+					if ($(this).find('.pwd').val() !== prefs.pwd) {
+						preloader(true);
+					}
+					$(this).dialog('destroy').remove();
+				}
+			});
+		}
+	});
 }
 /**
  * 控制遮罩层的展示
@@ -2216,7 +2599,7 @@ function preloader(f) {
 		G.preloader = anychart.ui.preloader();
 		G.preloader.render();
 	}
-	if (typeof(f) !== 'boolean') {
+	if (!is_bool(f)) {
 		return G.preloader.visible();
 	}
 	if (G.preloader.visible() === f) {
