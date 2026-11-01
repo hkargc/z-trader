@@ -1456,7 +1456,7 @@ _this.limit = function(proto, sec, cnt, delay) {
 	sec *= 1000;
 	delay *= 1000;
 	let now = _this.performance.now();
-	if (typeof(_this.qq[proto]) == 'undefined') {
+	if (empty(_this.qq[proto])) {
 		_this.qq[proto] = new Array();
 	}
 	while (ago = intval(array_shift(_this.qq[proto]))) {

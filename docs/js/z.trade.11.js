@@ -60,7 +60,7 @@ function get_headers() {
 	return {
 		"Authorization": "Bearer " + Q.access_token,
 		"Accept": "application/json",
-		"User-Agent": "tqsdk-python 3.9.9"
+		"User-Agent": "tqsdk-python 3.10.4"
 	};
 }
 /**
@@ -483,7 +483,7 @@ _this._open = function() {
 				let a = NEW["notify"][k];
 				delete NEW["notify"][k];
 				console.log(structuredClone(a));
-				in_array(a["code"], [321, 328, 329, 331, 336]) || _this.post({ //模拟后端推送消息
+				in_array(a["code"], [321, 328, 329, 330, 331, 336]) || _this.post({ //模拟后端推送消息
 					proto: 1003,
 					serialNo: 0
 				}, {
@@ -1303,7 +1303,7 @@ _this.limit = function(proto, sec, cnt, delay) {
 	sec *= 1000;
 	delay *= 1000;
 	let now = _this.performance.now();
-	if (typeof(_this.qq[proto]) == 'undefined') {
+	if (empty(_this.qq[proto])) {
 		_this.qq[proto] = new Array();
 	}
 	while (ago = intval(array_shift(_this.qq[proto]))) {

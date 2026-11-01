@@ -50,7 +50,7 @@ function get_headers() {
 	return {
 		"Authorization": "Bearer " + Q.access_token,
 		"Accept": "application/json",
-		"User-Agent": "tqsdk-python 3.9.9"
+		"User-Agent": "tqsdk-python 3.10.4"
 	};
 }
 /**
@@ -630,7 +630,7 @@ _this._open = function() {
 
 				let symbols = [];
 				let futureInfoList = [];
-				let expire = mktime(24, 0, 0) + 21 * 60 * 60; //明天晚上9点过期
+				let expire = mktime(24, 0, 0) + 21 * 60 * 60; //明天晚上9点过期:天勤主力的选定标准为该合约持仓量和成交量均为最大后,在下一个交易日开盘后进行切换
 				for (let i in a["result"]["multi_symbol_info"]) {
 					let b = a["result"]["multi_symbol_info"][i];
 					let c = b['underlying'] && b['underlying']['edges'] && b['underlying']['edges'][0] && b['underlying']['edges'][0]['node'] ? b['underlying']['edges'][0]['node'] : {};
